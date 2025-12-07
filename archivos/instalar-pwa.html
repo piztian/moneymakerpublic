@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📱 Instalar Task Money Maker - PWA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .header h1 {
+            font-family: 'Baloo 2', cursive;
+            font-size: 2.5rem;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .card h2 {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.8rem;
+            color: #2D3748;
+            margin-bottom: 20px;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section h3 {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.3rem;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .step {
+            background: #f5f7fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .step strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .step p {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .icon-big {
+            font-size: 3rem;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .benefits {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .benefit {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .benefit-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .install-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .install-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .os-tabs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .tab-button {
+            padding: 12px;
+            background: #e0e0e0;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .faq {
+            margin-top: 30px;
+        }
+
+        .faq-item {
+            margin-bottom: 15px;
+            background: #f5f7fa;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .faq-item strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .benefits {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📱 Task Money Maker</h1>
+            <p>¡Instala la app en tu móvil en segundos!</p>
+        </div>
+
+        <div class="card">
+            <h2>✨ ¿Por qué instalar como app?</h2>
+            <div class="benefits">
+                <div class="benefit">
+                    <div class="benefit-icon">⚡</div>
+                    <div>Súper Rápida</div>
+                </div>
+                <div class="benefit">
+                    <div class="benefit-icon">📱</div>
+                    <div>En el Home</div>
+                </div>
+                <div class="benefit">
+                    <div class="benefit-icon">🔔</div>
+                    <div>Notificaciones</div>
+                </div>
+                <div class="benefit">
+                    <div class="benefit-icon">🌐</div>
+                    <div>Offline Ready</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📲 ¿Cómo Instalar?</h2>
+
+            <div class="os-tabs">
+                <button class="tab-button active" onclick="mostrarTab(event, 'android')">📱 Android</button>
+                <button class="tab-button" onclick="mostrarTab(event, 'iphone')">🍎 iPhone</button>
+            </div>
+
+            <!-- Android -->
+            <div id="android" class="tab-content active">
+                <div class="section">
+                    <h3>Pasos para Android:</h3>
+                    
+                    <div class="step">
+                        <strong>1️⃣ Abre el Dashboard</strong>
+                        <p>Accede a tu Dashboard desde Chrome o navegador predeterminado</p>
+                    </div>
+
+                    <div class="step">
+                        <strong>2️⃣ Busca el ícono de menú</strong>
+                        <p>En la parte superior derecha del navegador (⋮ o 3 puntitos)</p>
+                    </div>
+
+                    <div class="step">
+                        <strong>3️⃣ Toca "Instalar app"</strong>
+                        <p>Verás una opción que dice "Instalar aplicación" o "Instalar en la pantalla de inicio"</p>
+                    </div>
+
+                    <div class="step">
+                        <strong>4️⃣ Confirma la instalación</strong>
+                        <p>Toca el botón de confirmación y ¡listo! La app aparecerá en tu pantalla de inicio</p>
+                    </div>
+
+                    <div class="highlight">
+                        <strong>💡 Tip:</strong> Si no ves la opción de instalar, espera unos segundos a que cargue completamente la página.
+                    </div>
+                </div>
+            </div>
+
+            <!-- iPhone -->
+            <div id="iphone" class="tab-content">
+                <div class="section">
+                    <h3>Pasos para iPhone:</h3>
+                    
+                    <div class="step">
+                        <strong>1️⃣ Abre el Dashboard</strong>
+                        <p>Accede a tu Dashboard desde Safari (es importante usar Safari)</p>
+                    </div>
+
+                    <div class="step">
+                        <strong>2️⃣ Toca el ícono de compartir</strong>
+                        <p>Busca el ícono con una flecha hacia arriba (↑) en la parte inferior</p>
+                    </div>
+
+                    <div class="step">
+                        <strong>3️⃣ Toca "Agregar a pantalla de inicio"</strong>
+                        <p>Desliza hacia abajo si no ves esta opción inmediatamente</p>
+                    </div>
+
+                    <div class="step">
+                        <strong>4️⃣ Personaliza el nombre (opcional)</strong>
+                        <p>Puedes cambiar el nombre si lo deseas, luego toca "Agregar"</p>
+                    </div>
+
+                    <div class="step">
+                        <strong>5️⃣ ¡Listo!</strong>
+                        <p>La app aparecerá en tu pantalla de inicio y se verá como una app normal</p>
+                    </div>
+
+                    <div class="highlight">
+                        <strong>⚠️ Importante:</strong> Los iPhones tienen limitaciones con PWAs, pero funcionará muy bien como acceso rápido.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>❓ Preguntas Frecuentes</h2>
+            
+            <div class="faq">
+                <div class="faq-item">
+                    <strong>¿Necesito Internet para usar la app?</strong>
+                    <p>La mayoría de funciones requieren Internet para sincronizar, pero algunas funciones básicas funcionan offline.</p>
+                </div>
+
+                <div class="faq-item">
+                    <strong>¿Puedo desinstalar la app fácilmente?</strong>
+                    <p>Sí, solo mantén presionado el ícono de la app en tu pantalla de inicio y selecciona "Desinstalar".</p>
+                </div>
+
+                <div class="faq-item">
+                    <strong>¿Los datos se sincronizan automáticamente?</strong>
+                    <p>Sí, todos tus datos se guardan automáticamente en Google Sheets cada 5 minutos.</p>
+                </div>
+
+                <div class="faq-item">
+                    <strong>¿Cómo recibo actualizaciones?</strong>
+                    <p>Las actualizaciones se instalan automáticamente. Si hay cambios, verás un mensaje para recargar la app.</p>
+                </div>
+
+                <div class="faq-item">
+                    <strong>¿Funciona en cualquier navegador?</strong>
+                    <p>Se recomienda Chrome para Android e Safari para iPhone para la mejor experiencia.</p>
+                </div>
+
+                <div class="faq-item">
+                    <strong>¿Mis datos son privados?</strong>
+                    <p>Sí, todos tus datos se guardan en tu Google Sheet personal. Solo tú tienes acceso.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; text-align: center;">
+            <h2 style="color: white;">🚀 ¿Listo?</h2>
+            <p style="color: rgba(255,255,255,0.95); margin-bottom: 20px;">
+                Ve a tu Dashboard y sigue los pasos anteriores para instalar
+            </p>
+            <a href="https://capinimx.bitrix24.site/ensenandoluke/dashboardmoneytareas/" class="install-btn" style="background: white; color: #667eea;">
+                ➡️ Ir al Dashboard
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function mostrarTab(event, tabName) {
+            // Ocultar todos los tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Desactivar todos los botones
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            // Mostrar el tab seleccionado
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
