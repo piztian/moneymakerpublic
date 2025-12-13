@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏆 Resumen Semanal - Task Money Maker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            padding-top: 20px;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .header h1 {
+            font-family: 'Baloo 2', cursive;
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 4px 4px 0px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            background: rgba(255,255,255,0.95);
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .loading {
+            background: white;
+            padding: 50px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #eee;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            animation: fadeIn 0.6s ease-out both;
+            text-align: center;
+            border: 3px solid transparent;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.1s; border-color: #FF6B9D; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; border-color: #FEC163; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; border-color: #4ECDC4; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; border-color: #667eea; }
+
+        .stat-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-family: 'Baloo 2', cursive;
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 0.95rem;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            animation: fadeIn 0.6s ease-out both;
+        }
+
+        .chart-card:nth-child(1) { animation-delay: 0.5s; }
+        .chart-card:nth-child(2) { animation-delay: 0.6s; }
+
+        .chart-card h3 {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.5rem;
+            color: #2D3748;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        .table-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+            animation: fadeIn 0.6s ease-out 0.7s both;
+        }
+
+        .table-card h3 {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.5rem;
+            color: white;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            text-align: center;
+            margin: 0;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9rem;
+        }
+
+        tbody tr {
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background: #f0f0ff;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .semana {
+            font-family: 'Baloo 2', cursive;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .money {
+            color: #FF6B9D;
+            font-weight: 700;
+        }
+
+        .percentage {
+            color: #4ECDC4;
+            font-weight: 700;
+        }
+
+        .best-day {
+            background: linear-gradient(135deg, rgba(78, 205, 196, 0.2), rgba(254, 193, 99, 0.2));
+            font-weight: 700;
+            color: #4ECDC4;
+            padding: 6px 10px;
+            border-radius: 8px;
+            display: inline-block;
+            font-size: 0.85rem;
+        }
+
+        .tasks-count {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+            font-weight: 700;
+            color: #667eea;
+            padding: 6px 10px;
+            border-radius: 8px;
+            display: inline-block;
+            font-size: 0.85rem;
+        }
+
+        .empty {
+            background: white;
+            padding: 80px 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            color: #666;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .empty h3 {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.8rem;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .empty p {
+            font-size: 1.1rem;
+            color: #999;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .modal-header h2 {
+            font-family: 'Baloo 2', cursive;
+            color: #667eea;
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .modal-close:hover {
+            color: #667eea;
+        }
+
+        .week-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .day-item {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 4px solid #ddd;
+        }
+
+        .day-item.active {
+            background: linear-gradient(135deg, rgba(78, 205, 196, 0.2), rgba(102, 126, 234, 0.2));
+            border-left-color: #4ECDC4;
+        }
+
+        .day-name {
+            font-weight: 700;
+            color: #667eea;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+
+        .day-date {
+            font-size: 0.9rem;
+            color: #999;
+            margin-bottom: 8px;
+        }
+
+        .day-earnings {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.2rem;
+            color: #FF6B9D;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .day-percentage {
+            font-size: 0.8rem;
+            color: #4ECDC4;
+            font-weight: 600;
+        }
+
+        .week-summary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .week-summary h3 {
+            font-family: 'Baloo 2', cursive;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .week-summary-value {
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: 'Baloo 2', cursive;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-container {
+                height: 250px;
+            }
+
+            .week-grid {
+                grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav-buttons">
+            <a id="btnDashboard" href="#" class="btn">← Dashboard</a>
+            <a id="btnReportes" href="#" class="btn">📊 Datos Diarios</a>
+            <a id="btnInicio" href="#" class="btn">🏠 Inicio</a>
+        </div>
+
+        <div class="header">
+            <h1>🏆 Resumen Semanal</h1>
+            <p>¡Mira tu progreso a lo largo de las semanas!</p>
+        </div>
+
+        <div id="loading" class="loading" style="display: block;">
+            <div class="spinner"></div>
+            <p style="font-size: 1.2rem; color: #667eea; font-weight: 600;">Cargando tu resumen...</p>
+        </div>
+
+        <div id="content" style="display: none;">
+            <!-- Tarjetas de resumen -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-value" id="totalGanado">$0.00</div>
+                    <div class="stat-label">Total Ganado</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📅</div>
+                    <div class="stat-value" id="totalSemanas">0</div>
+                    <div class="stat-label">Semanas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💵</div>
+                    <div class="stat-value" id="promedioPorSemana">$0.00</div>
+                    <div class="stat-label">Promedio/Semana</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🔥</div>
+                    <div class="stat-value" id="mejorSemana">S-0</div>
+                    <div class="stat-label">Mejor Semana</div>
+                </div>
+            </div>
+
+            <!-- Gráficas -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3>📈 Ganancia por Semana</h3>
+                    <div class="chart-container">
+                        <canvas id="chartGanancia"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h3>📋 Tareas por Semana</h3>
+                    <div class="chart-container">
+                        <canvas id="chartTareas"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla -->
+            <div class="table-card">
+                <h3>📋 Detalle de Semanas (click para ver días)</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>📅 Semana</th>
+                                <th>💰 Total</th>
+                                <th>📊 Días</th>
+                                <th>💵 Promedio/Día</th>
+                                <th>✅ Tareas</th>
+                                <th>🎯 %</th>
+                                <th>🏆 Mejor Día</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="empty" class="empty" style="display: none;">
+            <div class="empty-icon">📭</div>
+            <h3>¡Aún no hay datos!</h3>
+            <p>Completa tareas y volverás a ver tu resumen aquí</p>
+        </div>
+    </div>
+
+    <!-- Modal para ver semana completa -->
+    <div id="modalSemana" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitulo">Semana 50</h2>
+                <button class="modal-close" onclick="cerrarModal()">✕</button>
+            </div>
+            <div id="modalContenido">
+                <!-- Se llena con JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyNdna02iNhTZR97mFJOBqpuQwPo6iO40ZpVr1vO5VnpUy8bdljtZiqpOvrpjB0tBNZ/exec";
+        let clienteId = new URLSearchParams(window.location.search).get('cliente') || 'luke-alexander';
+        
+        let chartsInstances = {};
+        let datosGlobales = [];
+
+        // Inicializar navegación
+        function initNavigation() {
+            const baseUrl = 'https://capinimx.bitrix24.site/ensenandoluke';
+            
+            document.getElementById('btnDashboard').href = baseUrl + '/dashboardmoneytareas/?cliente=' + clienteId;
+            document.getElementById('btnReportes').href = baseUrl + '/reportes/?cliente=' + clienteId;
+            document.getElementById('btnInicio').href = baseUrl + '/inicio/?cliente=' + clienteId;
+        }
+
+        async function cargarDatos() {
+            try {
+                const url = `${SCRIPT_URL}?cliente=${clienteId}`;
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (!data.datosDiarios || data.datosDiarios.length <= 1) {
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('empty').style.display = 'block';
+                    return;
+                }
+
+                // Guardar datos globales para acceso al modal
+                datosGlobales = data.datosDiarios.slice(1);
+
+                // Procesar datos
+                if (!data.resumenSemanal || data.resumenSemanal.length <= 1) {
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('empty').style.display = 'block';
+                    return;
+                }
+
+                const filas = data.resumenSemanal.slice(1);
+
+                if (filas.length === 0) {
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('empty').style.display = 'block';
+                    return;
+                }
+
+                procesarDatos(filas);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('empty').style.display = 'block';
+            }
+        }
+
+        function procesarDatos(filas) {
+            const labels = [];
+            const ganancias = [];
+            const tareas = [];
+            let totalGanado = 0;
+            let mejorSemana = { semana: '-', ganado: 0 };
+
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            filas.forEach(fila => {
+                const semana = fila[0]; // Año-Semana
+                const ganado = parseFloat(fila[1]) || 0;
+                const diasActivos = parseInt(fila[2]) || 0;
+                const promedioDiario = parseFloat(fila[3]) || 0;
+                const tareasTotales = parseInt(fila[4]) || 0;
+                const porcentajePromedio = parseFloat(fila[5]) || 0;
+                const mejorDia = fila[6] || '-';
+
+                totalGanado += ganado;
+                ganancias.push(ganado);
+                tareas.push(tareasTotales);
+                labels.push(semana.split('-')[1]); // Solo "S49", "S48", etc.
+
+                if (ganado > mejorSemana.ganado) {
+                    mejorSemana = { semana: semana.split('-')[1], ganado };
+                }
+
+                const tr = document.createElement('tr');
+                tr.style.cursor = 'pointer';
+                tr.onclick = () => mostrarSemana(semana);
+                tr.innerHTML = `
+                    <td class="semana">${semana}</td>
+                    <td class="money">$${ganado.toFixed(2)}</td>
+                    <td style="text-align: center;">${diasActivos}</td>
+                    <td class="money">$${promedioDiario.toFixed(2)}</td>
+                    <td><span class="tasks-count">${tareasTotales} ✅</span></td>
+                    <td class="percentage">${(porcentajePromedio * 100).toFixed(1)}%</td>
+                    <td><span class="best-day">${mejorDia}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Actualizar tarjetas
+            const promedioPorSemana = filas.length > 0 ? totalGanado / filas.length : 0;
+            document.getElementById('totalGanado').textContent = '$' + totalGanado.toFixed(2);
+            document.getElementById('totalSemanas').textContent = filas.length;
+            document.getElementById('promedioPorSemana').textContent = '$' + promedioPorSemana.toFixed(2);
+            document.getElementById('mejorSemana').textContent = mejorSemana.semana;
+
+            // Crear gráficas
+            crearGraficas(labels, ganancias, tareas);
+        }
+
+        function crearGraficas(labels, ganancias, tareas) {
+            // Invertir para mostrar de más antigua a más reciente
+            labels = labels.reverse();
+            ganancias = ganancias.reverse();
+            tareas = tareas.reverse();
+
+            // Gráfica de ganancia
+            const ctxGanancia = document.getElementById('chartGanancia').getContext('2d');
+            if (chartsInstances.ganancia) chartsInstances.ganancia.destroy();
+            
+            chartsInstances.ganancia = new Chart(ctxGanancia, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Ganancia ($)',
+                        data: ganancias,
+                        backgroundColor: ganancias.map((g, i) => {
+                            const colors = ['#FF6B9D', '#FEC163', '#4ECDC4', '#667eea', '#A78BFA', '#F093FB', '#00D9FF'];
+                            return colors[i % colors.length];
+                        }),
+                        borderWidth: 0,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { callback: v => '$' + v }
+                        }
+                    }
+                }
+            });
+
+            // Gráfica de tareas
+            const ctxTareas = document.getElementById('chartTareas').getContext('2d');
+            if (chartsInstances.tareas) chartsInstances.tareas.destroy();
+            
+            chartsInstances.tareas = new Chart(ctxTareas, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Total de Tareas',
+                        data: tareas,
+                        backgroundColor: tareas.map((t, i) => {
+                            const colors = ['#4ECDC4', '#00D9FF', '#A78BFA', '#F093FB', '#FF6B9D', '#FEC163', '#667eea'];
+                            return colors[i % colors.length];
+                        }),
+                        borderWidth: 0,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { callback: v => v + '' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function mostrarSemana(semanaId) {
+            const modal = document.getElementById('modalSemana');
+            const modalTitulo = document.getElementById('modalTitulo');
+            const modalContenido = document.getElementById('modalContenido');
+
+            modalTitulo.textContent = `Semana ${semanaId}`;
+
+            // Filtrar datos de la semana
+            const datosSemanales = datosGlobales.filter(fila => {
+                const numeroSemana = parseInt(fila[2]);
+                return numeroSemana === parseInt(semanaId.split('-')[1]);
+            });
+
+            if (datosSemanales.length === 0) {
+                modalContenido.innerHTML = '<p style="color: #999;">No hay datos para esta semana</p>';
+                modal.classList.add('active');
+                return;
+            }
+
+            // Crear grid de días
+            let html = '<div class="week-grid">';
+            
+            const diasMap = {
+                'Lunes': 'Lun',
+                'Martes': 'Mar',
+                'Miércoles': 'Mié',
+                'Jueves': 'Jue',
+                'Viernes': 'Vie',
+                'Sábado': 'Sab',
+                'Domingo': 'Dom'
+            };
+
+            let totalSemanal = 0;
+            let tareasSem = 0;
+
+            datosSemanales.forEach(fila => {
+                const fecha = fila[0];
+                const dia = fila[1];
+                const ganado = parseFloat(fila[3]) || 0;
+                const numTareas = parseInt(fila[5]) || 0;
+                const porcentaje = parseFloat(fila[6]) || 0;
+
+                totalSemanal += ganado;
+                tareasSem += numTareas;
+
+                const diaCorto = diasMap[dia] || dia.substring(0, 3);
+                const clase = ganado > 0 ? 'active' : '';
+
+                html += `
+                    <div class="day-item ${clase}">
+                        <div class="day-name">${diaCorto}</div>
+                        <div class="day-date">${fecha.substring(5)}</div>
+                        <div class="day-earnings">$${ganado.toFixed(2)}</div>
+                        <div class="day-percentage">${(porcentaje * 100).toFixed(0)}%</div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+
+            // Resumen de la semana
+            html += `
+                <div class="week-summary">
+                    <h3>Resumen Semanal</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px;">
+                        <div>
+                            <div style="font-size: 0.9rem; opacity: 0.9;">Total Ganado</div>
+                            <div class="week-summary-value">$${totalSemanal.toFixed(2)}</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.9rem; opacity: 0.9;">Tareas Completadas</div>
+                            <div class="week-summary-value">${tareasSem}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            modalContenido.innerHTML = html;
+            modal.classList.add('active');
+        }
+
+        function cerrarModal() {
+            document.getElementById('modalSemana').classList.remove('active');
+        }
+
+        // Cerrar modal al presionar Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') cerrarModal();
+        });
+
+        // Cerrar modal al hacer click fuera
+        document.getElementById('modalSemana').addEventListener('click', (e) => {
+            if (e.target.id === 'modalSemana') cerrarModal();
+        });
+
+        // Cargar al iniciar
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                initNavigation();
+                cargarDatos();
+            });
+        } else {
+            initNavigation();
+            cargarDatos();
+        }
+    </script>
+</body>
+</html>
