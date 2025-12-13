@@ -1,11 +1,12 @@
 // ============================================
 // TASK MONEY MAKER - GOOGLE APPS SCRIPT MASTER
 // Sistema Multi-Cliente con Tabla Centralizada
-// EnseÃ±andoLuke por Luke Alexander
-// ACTUALIZADO: EnvÃ­o automÃ¡tico de emails al registrarse
+// EnseñandoLuke por Luke Alexander
+// ACTUALIZADO: Envío automático de emails al registrarse
+// VERSIÓN FINAL - FUNCIONANDO CORRECTAMENTE ✅
 // ============================================
 
-// CONFIGURACIÃ“N: Spreadsheet ID de la plantilla maestra (donde estÃ¡ la tabla de clientes)
+// CONFIGURACIÓN: Spreadsheet ID de la plantilla maestra (donde está la tabla de clientes)
 const MASTER_SPREADSHEET_ID = '1VFxMN-HQIQAA-sWBjaPNo8h53fjDqbxd8zLVhh61rXw';
 const CLIENTES_SHEET_NAME = 'Clientes';
 const TIMEZONE = 'America/Mexico_City'; // Guadalajara, Jalisco
@@ -16,21 +17,21 @@ let clientesCacheTime = 0;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
 
 // ============================================
-// FUNCIÃ“N: Crear menÃº en Google Sheets
+// FUNCIÓN: Crear menú en Google Sheets
 // ============================================
 function onOpen() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const menu = ss.addMenu('âš™ï¸ Task Money Maker', [
-    { name: 'ðŸ“§ Enviar URLs a Nuevo Cliente', functionName: 'abrirDialogoEnvioEmail' },
-    { name: 'ðŸ”„ Limpiar Cache de Clientes', functionName: 'limpiarCacheClientes' },
-    { name: 'ðŸ“ Actualizar Todas las FÃ³rmulas', functionName: 'actualizarFormulas' },
+  const menu = ss.addMenu('⚙️ Task Money Maker', [
+    { name: '📧 Enviar URLs a Nuevo Cliente', functionName: 'abrirDialogoEnvioEmail' },
+    { name: '🔄 Limpiar Cache de Clientes', functionName: 'limpiarCacheClientes' },
+    { name: '🔧 Actualizar Todas las Fórmulas', functionName: 'actualizarFormulas' },
     null, // Separador
-    { name: 'â“ Ayuda', functionName: 'mostrarAyuda' }
+    { name: '❓ Ayuda', functionName: 'mostrarAyuda' }
   ]);
 }
 
 // ============================================
-// TRIGGER AUTOMÃTICO: Notificar al admin cuando se registra cliente
+// TRIGGER AUTOMÁTICO: Notificar al admin cuando se registra cliente
 // ============================================
 function onFormSubmit(e) {
   try {
@@ -40,15 +41,15 @@ function onFormSubmit(e) {
     const sheet = ss.getSheetByName(CLIENTES_SHEET_NAME);
     
     if (!sheet) {
-      Logger.log('âŒ No existe hoja Clientes');
+      Logger.log('❌ No existe hoja Clientes');
       return;
     }
     
-    // Obtener Ãºltima fila (el nuevo cliente registrado)
+    // Obtener última fila (el nuevo cliente registrado)
     const lastRow = sheet.getLastRow();
     const data = sheet.getRange(lastRow, 1, 1, 10).getValues()[0];
     
-    // Estructura: A=Marca temporal, B=ID Cliente, C=Nombre, D=Sheet ID, E=Email, F=TelÃ©fono
+    // Estructura: A=Marca temporal, B=ID Cliente, C=Nombre, D=Sheet ID, E=Email, F=Teléfono
     const marca = data[0];          // A
     const idCliente = data[1];      // B
     const nombre = data[2];         // C
@@ -61,55 +62,55 @@ function onFormSubmit(e) {
     Logger.log('ID: ' + idCliente);
     
     if (!email || !nombre) {
-      Logger.log('âŒ Falta email o nombre');
+      Logger.log('❌ Falta email o nombre');
       return;
     }
     
-    // ENVIAR NOTIFICACIÃ“N AL ADMIN (piztian@gmail.com)
+    // ENVIAR NOTIFICACIÓN AL ADMIN (piztian@gmail.com)
     const adminEmail = 'piztian@gmail.com';
-    const asunto = 'ðŸ”” [TAREA] Nuevo cliente registrado: ' + nombre;
+    const asunto = '📋 [TAREA] Nuevo cliente registrado: ' + nombre;
     
-    const cuerpo = `Â¡Hola Cris! ðŸ‘‹
+    const cuerpo = `¡Hola Cris! 👋
 
 Un nuevo cliente acaba de registrarse en Task Money Maker:
 
-ðŸ“‹ DATOS DEL CLIENTE:
-â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
+📋 DATOS DEL CLIENTE:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Nombre: ${nombre}
 Email: ${email}
-TelÃ©fono: ${telefono}
+Teléfono: ${telefono}
 Marca temporal: ${marca}
 ID Cliente: ${idCliente}
-â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-ðŸ“ PRÃ“XIMOS PASOS:
-1ï¸âƒ£ Copiar plantilla de Google Sheet
-2ï¸âƒ£ Renombrar: "TaskMoneyMaker - ${nombre}"
-3ï¸âƒ£ Copiar el Sheet ID
-4ï¸âƒ£ Pegar en columna D de la pestaÃ±a "Clientes"
-5ï¸âƒ£ Ir a âš™ï¸ Task Money Maker â†’ ðŸ“§ Enviar URLs a Nuevo Cliente
-6ï¸âƒ£ Seleccionar cliente y enviar email
+📝 PRÓXIMOS PASOS:
+1️⃣ Copiar plantilla de Google Sheet
+2️⃣ Renombrar: "TaskMoneyMaker - ${nombre}"
+3️⃣ Copiar el Sheet ID
+4️⃣ Pegar en columna D de la pestaña "Clientes"
+5️⃣ Ir a ⚙️ Task Money Maker → 📧 Enviar URLs a Nuevo Cliente
+6️⃣ Seleccionar cliente y enviar email
 
-ðŸ”— Link a pestaÃ±a Clientes:
+🔗 Link a pestaña Clientes:
 https://docs.google.com/spreadsheets/d/${MASTER_SPREADSHEET_ID}/edit#gid=0
 
-Â¡A trabajar! ðŸ’ª
+¡A trabajar! 💪
     `.trim();
     
     // Enviar email al admin
     MailApp.sendEmail(adminEmail, asunto, cuerpo);
     
-    Logger.log('âœ… NotificaciÃ³n enviada a admin: ' + adminEmail);
+    Logger.log('✅ Notificación enviada a admin: ' + adminEmail);
     Logger.log('=== FIN REGISTRO ===');
     
   } catch (error) {
-    Logger.log('âŒ Error en onFormSubmit: ' + error.toString());
+    Logger.log('❌ Error en onFormSubmit: ' + error.toString());
     Logger.log(error.stack);
   }
 }
 
 // ============================================
-// FUNCIÃ“N: DiÃ¡logo para enviar emails
+// FUNCIÓN: Diálogo para enviar emails
 // ============================================
 function abrirDialogoEnvioEmail() {
   const html = HtmlService.createHtmlOutput(`
@@ -211,10 +212,10 @@ function abrirDialogoEnvioEmail() {
     </style>
     
     <div class="container">
-      <h2>ðŸ“§ Enviar URLs a Nuevo Cliente</h2>
+      <h2>📧 Enviar URLs a Nuevo Cliente</h2>
       
       <div class="info">
-        âœ¨ Selecciona un cliente de la tabla "Clientes" y se enviarÃ¡ un email con sus URLs personalizadas.
+        ✨ Selecciona un cliente de la tabla "Clientes" y se enviará un email con sus URLs personalizadas.
       </div>
       
       <div class="form-group">
@@ -235,7 +236,7 @@ function abrirDialogoEnvioEmail() {
       </div>
       
       <div class="button-group">
-        <button class="btn-enviar" onclick="enviarEmail()">ðŸ“§ Enviar Email</button>
+        <button class="btn-enviar" onclick="enviarEmail()">📧 Enviar Email</button>
         <button class="btn-cancelar" onclick="google.script.host.close()">Cancelar</button>
       </div>
     </div>
@@ -267,7 +268,7 @@ function abrirDialogoEnvioEmail() {
         const email = document.getElementById('emailDestino').value;
         
         if (!select.value || !email) {
-          alert('âš ï¸ Por favor completa todos los campos');
+          alert('⚠️ Por favor completa todos los campos');
           return;
         }
         
@@ -278,21 +279,21 @@ function abrirDialogoEnvioEmail() {
         google.script.run.withSuccessHandler(function(resultado) {
           document.getElementById('loading').style.display = 'none';
           if (resultado.success) {
-            alert('âœ… Email enviado correctamente a ' + email);
+            alert('✅ Email enviado correctamente a ' + email);
             google.script.host.close();
           } else {
-            alert('âŒ Error: ' + resultado.message);
+            alert('❌ Error: ' + resultado.message);
           }
         }).enviarEmailCliente(cliente, email);
       }
     </script>
   `);
   
-  SpreadsheetApp.getUi().showModelessDialog(html, 'ðŸ“§ Enviar URLs');
+  SpreadsheetApp.getUi().showModelessDialog(html, '📧 Enviar URLs');
 }
 
 // ============================================
-// FUNCIÃ“N: Obtener clientes para el diÃ¡logo
+// FUNCIÓN: Obtener clientes para el diálogo
 // ============================================
 function obtenerClientesParaEmail() {
   try {
@@ -305,15 +306,15 @@ function obtenerClientesParaEmail() {
     const clientes = [];
     
     // Saltar encabezado (fila 0)
-    // Estructura: A=Marca temporal, B=ID Cliente, C=Nombre, D=Sheet ID, E=Email, F=TelÃ©fono, G=Dashboard, H=Reportes, I=Config, J=Resumen
+    // Estructura: A=Marca temporal, B=ID Cliente, C=Nombre, D=Sheet ID, E=Email, F=Teléfono, G=Dashboard, H=Reportes, I=Config, J=Resumen
     for (let i = 1; i < data.length; i++) {
-      if (data[i][1]) { // Si existe ID Cliente (columna B, Ã­ndice 1)
+      if (data[i][1]) { // Si existe ID Cliente (columna B, índice 1)
         clientes.push({
           'ID Cliente': data[i][1],      // B
           'Nombre': data[i][2],          // C
           'Sheet ID': data[i][3],        // D
           'Email': data[i][4],           // E
-          'TelÃ©fono': data[i][5],        // F
+          'Teléfono': data[i][5],        // F
           'Dashboard': data[i][6],       // G
           'Reportes': data[i][7],        // H
           'Config': data[i][8],          // I
@@ -330,7 +331,7 @@ function obtenerClientesParaEmail() {
 }
 
 // ============================================
-// FUNCIÃ“N: Enviar email con URLs
+// FUNCIÓN: Enviar email con URLs
 // ============================================
 function enviarEmailCliente(cliente, emailDestino) {
   try {
@@ -344,49 +345,49 @@ function enviarEmailCliente(cliente, emailDestino) {
     const config = baseUrl + '/config/?cliente=' + idCliente;
     const resumen = baseUrl + '/resumensemanal/?cliente=' + idCliente;
     
-    const asunto = 'ðŸŽ‰ Â¡Tu acceso a Task Money Maker estÃ¡ listo!';
+    const asunto = '🎉 ¡Tu acceso a Task Money Maker está listo!';
     
-    const cuerpo = `Â¡Hola ${nombreCliente}! ðŸ‘‹
+    const cuerpo = `¡Hola ${nombreCliente}! 👋
 
-Tu acceso a Task Money Maker ya estÃ¡ configurado y listo para usar. ðŸš€
+Tu acceso a Task Money Maker ya está configurado y listo para usar. 🚀
 
-ðŸ“Š ACCESO RÃPIDO:
+📊 ACCESO RÁPIDO:
 
-1ï¸âƒ£ Dashboard (Marca tus tareas diarias):
+1️⃣ Dashboard (Marca tus tareas diarias):
 ${dashboard}
 
-2ï¸âƒ£ ConfiguraciÃ³n (Personaliza tus tareas):
+2️⃣ Configuración (Personaliza tus tareas):
 ${config}
 
-3ï¸âƒ£ Reportes (Ve tu progreso):
+3️⃣ Reportes (Ve tu progreso):
 ${reportes}
 
-4ï¸âƒ£ Resumen Semanal (AnalÃ­tica semanal):
+4️⃣ Resumen Semanal (Analítica semanal):
 ${resumen}
 
 ---
 
-ðŸ’¡ TIPS PARA EMPEZAR:
-âœ… Marca las tareas que completes cada dÃ­a
-âœ… Configura las tareas segÃºn tus necesidades
-âœ… Revisa tus reportes para ver tu progreso
-âœ… MantÃ©n una racha constante ðŸ”¥
+💡 TIPS PARA EMPEZAR:
+✅ Marca las tareas que completes cada día
+✅ Configura las tareas según tus necesidades
+✅ Revisa tus reportes para ver tu progreso
+✅ Mantén una racha constante 🔥
 
 ---
 
-Â¿Dudas o necesitas ayuda? 
-ðŸ“ž Contacta con nuestro equipo
+¿Dudas o necesitas ayuda? 
+📞 Contacta con nuestro equipo
 
-Â¡A disfrutar! ðŸ’°
+¡A disfrutar! 💰
 
 ---
 Task Money Maker
-EnseÃ±andoLuke por Luke Alexander
+EnseñandoLuke por Luke Alexander
     `.trim();
     
     MailApp.sendEmail(emailDestino, asunto, cuerpo);
     
-    Logger.log('âœ… Email enviado a ' + emailDestino);
+    Logger.log('✅ Email enviado a ' + emailDestino);
     Logger.log('URLs generadas para: ' + idCliente);
     
     return {
@@ -404,7 +405,7 @@ EnseÃ±andoLuke por Luke Alexander
 }
 
 // ============================================
-// FUNCIÃ“N: Actualizar fÃ³rmulas
+// FUNCIÓN: Actualizar fórmulas
 // ============================================
 function actualizarFormulas() {
   try {
@@ -412,13 +413,13 @@ function actualizarFormulas() {
     const sheet = ss.getSheetByName(CLIENTES_SHEET_NAME);
     
     if (!sheet) {
-      SpreadsheetApp.getUi().alert('âŒ No existe la hoja "Clientes"');
+      SpreadsheetApp.getUi().alert('❌ No existe la hoja "Clientes"');
       return;
     }
     
     const data = sheet.getDataRange().getValues();
     
-    // Actualizar fÃ³rmulas para cada cliente
+    // Actualizar fórmulas para cada cliente
     for (let i = 1; i < data.length; i++) {
       const idCliente = data[i][0];
       
@@ -437,16 +438,16 @@ function actualizarFormulas() {
       }
     }
     
-    SpreadsheetApp.getUi().alert('âœ… FÃ³rmulas actualizadas correctamente');
-    Logger.log('âœ… FÃ³rmulas actualizadas');
+    SpreadsheetApp.getUi().alert('✅ Fórmulas actualizadas correctamente');
+    Logger.log('✅ Fórmulas actualizadas');
     
   } catch (error) {
-    SpreadsheetApp.getUi().alert('âŒ Error: ' + error.toString());
+    SpreadsheetApp.getUi().alert('❌ Error: ' + error.toString());
   }
 }
 
 // ============================================
-// FUNCIÃ“N: Mostrar Ayuda
+// FUNCIÓN: Mostrar Ayuda
 // ============================================
 function mostrarAyuda() {
   const html = HtmlService.createHtmlOutput(`
@@ -492,73 +493,73 @@ function mostrarAyuda() {
     </style>
     
     <div class="container">
-      <h2>â“ Ayuda - Task Money Maker</h2>
+      <h2>❓ Ayuda - Task Money Maker</h2>
       
       <div class="section">
-        <h3>ðŸ“§ Enviar URLs a Nuevo Cliente</h3>
-        <p>Selecciona un cliente de la tabla "Clientes" y automÃ¡ticamente se enviarÃ¡ un email con sus URLs personalizadas.</p>
-        <p><strong>Â¿CuÃ¡ndo usarlo?</strong> DespuÃ©s de que el cliente se registre en el formulario.</p>
+        <h3>📧 Enviar URLs a Nuevo Cliente</h3>
+        <p>Selecciona un cliente de la tabla "Clientes" y automáticamente se enviará un email con sus URLs personalizadas.</p>
+        <p><strong>¿Cuándo usarlo?</strong> Después de que el cliente se registre en el formulario.</p>
       </div>
       
       <div class="section">
-        <h3>ðŸ”„ Limpiar Cache de Clientes</h3>
-        <p>Limpia el cache interno para que se recarguen todos los clientes. Ãštil si acabas de agregar nuevos clientes.</p>
-        <p><strong>Â¿CuÃ¡ndo usarlo?</strong> Si los nuevos clientes no aparecen inmediatamente.</p>
+        <h3>🔄 Limpiar Cache de Clientes</h3>
+        <p>Limpia el cache interno para que se recarguen todos los clientes. Útil si acabas de agregar nuevos clientes.</p>
+        <p><strong>¿Cuándo usarlo?</strong> Si los nuevos clientes no aparecen inmediatamente.</p>
       </div>
       
       <div class="section">
-        <h3>ðŸ“ Actualizar Todas las FÃ³rmulas</h3>
-        <p>Regenera todas las fÃ³rmulas de URLs en la tabla "Clientes".</p>
-        <p><strong>Â¿CuÃ¡ndo usarlo?</strong> Si las URLs no se generan correctamente.</p>
+        <h3>🔧 Actualizar Todas las Fórmulas</h3>
+        <p>Regenera todas las fórmulas de URLs en la tabla "Clientes".</p>
+        <p><strong>¿Cuándo usarlo?</strong> Si las URLs no se generan correctamente.</p>
       </div>
       
       <div class="section">
-        <h3>ðŸ“‹ Estructura de la Tabla "Clientes"</h3>
+        <h3>📋 Estructura de la Tabla "Clientes"</h3>
         <p>Las columnas deben ser:</p>
-        <code>ID Cliente | Nombre | Sheet ID | Email | TelÃ©fono | Dashboard | Reportes | Config | Resumen</code>
+        <code>ID Cliente | Nombre | Sheet ID | Email | Teléfono | Dashboard | Reportes | Config | Resumen</code>
       </div>
       
       <div class="section">
-        <h3>âœ… Checklist para Nuevo Cliente</h3>
+        <h3>✅ Checklist para Nuevo Cliente</h3>
         <p>1. Cliente llena el formulario de Google</p>
-        <p>2. Se registra automÃ¡ticamente en la tabla "Clientes"</p>
-        <p>3. Las fÃ³rmulas generan los URLs automÃ¡ticamente</p>
-        <p>4. El email se envÃ­a AUTOMÃTICAMENTE âœ¨</p>
-        <p>5. Â¡Listo! El cliente puede usar</p>
+        <p>2. Se registra automáticamente en la tabla "Clientes"</p>
+        <p>3. Las fórmulas generan los URLs automáticamente</p>
+        <p>4. El email se envía AUTOMÁTICAMENTE ✨</p>
+        <p>5. ¡Listo! El cliente puede usar</p>
       </div>
     </div>
   `);
   
-  SpreadsheetApp.getUi().showModelessDialog(html, 'â“ Ayuda');
+  SpreadsheetApp.getUi().showModelessDialog(html, '❓ Ayuda');
 }
 
 // ============================================
-// FUNCIÃ“N: Cargar clientes desde tabla centralizada
+// FUNCIÓN: Cargar clientes desde tabla centralizada
 // ============================================
 function cargarClientes() {
   const ahora = Date.now();
   
-  // Si el cache estÃ¡ fresco, usarlo
+  // Si el cache está fresco, usarlo
   if (clientesCache && (ahora - clientesCacheTime) < CACHE_DURATION) {
-    Logger.log('âœ… Usando cache de clientes');
+    Logger.log('✅ Usando cache de clientes');
     return clientesCache;
   }
   
-  Logger.log('ðŸ“¥ Leyendo tabla de clientes...');
+  Logger.log('🔥 Leyendo tabla de clientes...');
   
   try {
     const ss = SpreadsheetApp.openById(MASTER_SPREADSHEET_ID);
     const sheet = ss.getSheetByName(CLIENTES_SHEET_NAME);
     
     if (!sheet) {
-      Logger.log('âŒ No existe hoja "Clientes"');
+      Logger.log('❌ No existe hoja "Clientes"');
       return {};
     }
     
     const data = sheet.getDataRange().getValues();
     const clientes = {};
     
-    // Estructura: A=Marca temporal, B=ID Cliente, C=Nombre, D=Sheet ID, E=Email, F=TelÃ©fono
+    // Estructura: A=Marca temporal, B=ID Cliente, C=Nombre, D=Sheet ID, E=Email, F=Teléfono
     // Saltar encabezado (fila 1)
     for (let i = 1; i < data.length; i++) {
       const id = data[i][1];        // Columna B
@@ -574,7 +575,7 @@ function cargarClientes() {
           email: email,
           telefono: telefono
         };
-        Logger.log('âœ… Cliente cargado: ' + id);
+        Logger.log('✅ Cliente cargado: ' + id);
       }
     }
     
@@ -582,17 +583,17 @@ function cargarClientes() {
     clientesCache = clientes;
     clientesCacheTime = ahora;
     
-    Logger.log('âœ… Total de clientes cargados: ' + Object.keys(clientes).length);
+    Logger.log('✅ Total de clientes cargados: ' + Object.keys(clientes).length);
     return clientes;
     
   } catch (error) {
-    Logger.log('âŒ Error cargando clientes: ' + error.toString());
+    Logger.log('❌ Error cargando clientes: ' + error.toString());
     return {};
   }
 }
 
 // ============================================
-// FUNCIÃ“N PRINCIPAL - Recibe datos del dashboard
+// FUNCIÓN PRINCIPAL - Recibe datos del dashboard
 // ============================================
 function doPost(e) {
   try {
@@ -619,22 +620,22 @@ function doPost(e) {
     const ss = SpreadsheetApp.openById(spreadsheetId);
     
     // ============================================
-    // GUARDAR CONFIGURACIÃ“N DE TAREAS
+    // GUARDAR CONFIGURACIÓN DE TAREAS
     // ============================================
     if (data.tipo === 'CONFIGURACION_TAREAS') {
-      Logger.log('â†’ Guardando configuraciÃ³n de tareas');
+      Logger.log('↑ Guardando configuración de tareas');
       let configSheet = ss.getSheetByName('ConfiguracionTareas');
       
       if (!configSheet) {
         configSheet = ss.insertSheet('ConfiguracionTareas');
-        configSheet.appendRow(['Cliente', 'Fecha', 'ConfiguraciÃ³n']);
+        configSheet.appendRow(['Cliente', 'Fecha', 'Configuración']);
         var headerRange = configSheet.getRange(1, 1, 1, 3);
         headerRange.setFontWeight('bold');
         headerRange.setBackground('#667eea');
         headerRange.setFontColor('#ffffff');
       }
       
-      // Buscar si ya existe configuraciÃ³n para este cliente
+      // Buscar si ya existe configuración para este cliente
       var ultimaFila = configSheet.getLastRow();
       var filaActualizacion = -1;
       
@@ -645,19 +646,19 @@ function doPost(e) {
       }
       
       if (filaActualizacion > 0) {
-        // Actualizar configuraciÃ³n existente
+        // Actualizar configuración existente
         configSheet.getRange(filaActualizacion, 2).setValue(data.fecha);
         configSheet.getRange(filaActualizacion, 3).setValue(data.configuracion);
-        Logger.log('âœ… ConfiguraciÃ³n actualizada en fila ' + filaActualizacion);
+        Logger.log('✅ Configuración actualizada en fila ' + filaActualizacion);
       } else {
-        // Agregar nueva configuraciÃ³n
+        // Agregar nueva configuración
         configSheet.appendRow([clienteId, data.fecha, data.configuracion]);
-        Logger.log('âœ… Nueva configuraciÃ³n agregada');
+        Logger.log('✅ Nueva configuración agregada');
       }
       
       return ContentService.createTextOutput(JSON.stringify({
         status: 'success',
-        message: 'ConfiguraciÃ³n guardada correctamente',
+        message: 'Configuración guardada correctamente',
         cliente: clienteId
       })).setMimeType(ContentService.MimeType.JSON);
     }
@@ -709,18 +710,18 @@ function doPost(e) {
     
     if (filaExistente > 0) {
       // ACTUALIZAR fila existente
-      Logger.log('â†’ ACTUALIZANDO fila ' + filaExistente);
+      Logger.log('↑ ACTUALIZANDO fila ' + filaExistente);
       actualizarFila(sheetDatos, filaExistente, datosParaGuardar);
     } else {
       // CREAR nueva fila
-      Logger.log('â†’ CREANDO nueva fila');
+      Logger.log('↑ CREANDO nueva fila');
       agregarNuevaFila(sheetDatos, datosParaGuardar);
     }
     
     // Formatear y ajustar columnas
     formatearHoja(sheetDatos);
     
-    // Actualizar resumen automÃ¡ticamente
+    // Actualizar resumen automáticamente
     actualizarResumenSemanal(ss);
     actualizarEstadisticas(ss);
     
@@ -746,7 +747,7 @@ function doPost(e) {
 }
 
 // ============================================
-// FUNCIÃ“N GET - Lee datos para reportes
+// FUNCIÓN GET - Lee datos para reportes
 // ============================================
 function doGet(e) {
   try {
@@ -767,10 +768,10 @@ function doGet(e) {
     const ss = SpreadsheetApp.openById(spreadsheetId);
     const sheetDatos = ss.getSheetByName('Datos Diarios');
     const sheetResumen = ss.getSheetByName('Resumen Semanal');
-    const sheetStats = ss.getSheetByName('EstadÃ­sticas');
+    const sheetStats = ss.getSheetByName('Estadísticas');
     const sheetConfig = ss.getSheetByName('ConfiguracionTareas');
     
-    // Buscar configuraciÃ³n del cliente
+    // Buscar configuración del cliente
     let configuracion = null;
     if (sheetConfig) {
       var configData = sheetConfig.getDataRange().getValues();
@@ -808,7 +809,7 @@ function doGet(e) {
 
 function inicializarHojaDatos(sheet) {
   var encabezados = [
-    'Fecha', 'DÃ­a', 'Semana', 'Total Ganado', 'Tareas Completadas',
+    'Fecha', 'Día', 'Semana', 'Total Ganado', 'Tareas Completadas',
     '# Tareas', '% Cumplimiento', 'Racha', 'Detalles'
   ];
   
@@ -854,19 +855,19 @@ function buscarFila(sheet, fecha) {
     } else if (typeof valorCelda === 'string') {
       fechaEnFila = valorCelda.split('T')[0];
     } else {
-      continue; // Saltar si no es fecha vÃ¡lida
+      continue; // Saltar si no es fecha válida
     }
     
     Logger.log('Fila ' + i + ': ' + fechaEnFila);
     
     // Comparar strings
     if (fechaEnFila === fechaBusqueda) {
-      Logger.log('âœ… Encontrada en fila ' + i);
+      Logger.log('✅ Encontrada en fila ' + i);
       return i;
     }
   }
   
-  Logger.log('âŒ No encontrada, crear nueva');
+  Logger.log('❌ No encontrada, crear nueva');
   return -1;
 }
 
@@ -878,7 +879,7 @@ function actualizarFila(sheet, fila, datos) {
   sheet.getRange(fila, 5).setValue(datos.tareasCompletadas);
   sheet.getRange(fila, 6).setValue(datos.numTareas);
   sheet.getRange(fila, 7).setValue(datos.porcentaje.toFixed(1) + '%');
-  sheet.getRange(fila, 8).setValue(datos.racha + ' dÃ­as');
+  sheet.getRange(fila, 8).setValue(datos.racha + ' días');
   sheet.getRange(fila, 9).setValue(datos.detalles);
 }
 
@@ -891,7 +892,7 @@ function agregarNuevaFila(sheet, datos) {
     datos.tareasCompletadas,
     datos.numTareas,
     datos.porcentaje.toFixed(1) + '%',
-    datos.racha + ' dÃ­as',
+    datos.racha + ' días',
     datos.detalles
   ]);
 }
@@ -954,7 +955,7 @@ function actualizarResumenSemanal(ss) {
   
   sheetResumen.clear();
   
-  var encabezados = ['AÃ±o-Semana', 'Total Ganado', 'DÃ­as Activos', 'Promedio Diario', 'Tareas Totales', '% Promedio', 'Mejor DÃ­a'];
+  var encabezados = ['Año-Semana', 'Total Ganado', 'Días Activos', 'Promedio Diario', 'Tareas Totales', '% Promedio', 'Mejor Día'];
   sheetResumen.appendRow(encabezados);
   
   var headerRange = sheetResumen.getRange(1, 1, 1, encabezados.length);
@@ -1016,7 +1017,7 @@ function actualizarResumenSemanal(ss) {
       s.dias,
       '$' + promedioDiario.toFixed(2),
       s.tareas,
-      (promedioPorcentaje * 100), // Convertir a decimal: 80.5 -> 0.805
+      (promedioPorcentaje * 100), // Multiplicar por 100 para convertir decimal a porcentaje
       mejorDia + ' ($' + s.mejorDia.total.toFixed(2) + ')'
     ]);
   }
@@ -1034,15 +1035,15 @@ function actualizarResumenSemanal(ss) {
 
 function actualizarEstadisticas(ss) {
   var sheetDatos = ss.getSheetByName('Datos Diarios');
-  var sheetStats = ss.getSheetByName('EstadÃ­sticas');
+  var sheetStats = ss.getSheetByName('Estadísticas');
   
   if (!sheetStats) {
-    sheetStats = ss.insertSheet('EstadÃ­sticas');
+    sheetStats = ss.insertSheet('Estadísticas');
   }
   
   sheetStats.clear();
   
-  sheetStats.getRange('A1').setValue('ðŸ“Š ESTADÃSTICAS - TASK MONEY MAKER');
+  sheetStats.getRange('A1').setValue('📊 ESTADÍSTICAS - TASK MONEY MAKER');
   sheetStats.getRange('A1').setFontSize(16);
   sheetStats.getRange('A1').setFontWeight('bold');
   sheetStats.getRange('A1:D1').merge();
@@ -1053,7 +1054,7 @@ function actualizarEstadisticas(ss) {
   var data = sheetDatos.getDataRange().getValues();
   
   if (data.length < 2) {
-    sheetStats.getRange('A3').setValue('No hay datos todavÃ­a');
+    sheetStats.getRange('A3').setValue('No hay datos todavía');
     return;
   }
   
@@ -1066,7 +1067,7 @@ function actualizarEstadisticas(ss) {
   for (var i = 1; i < data.length; i++) {
     var total = parseFloat(data[i][3].toString().replace('$', ''));
     var tareas = data[i][5];
-    var rachaStr = data[i][7].toString().replace(' dÃ­as', '');
+    var rachaStr = data[i][7].toString().replace(' días', '');
     var racha = parseInt(rachaStr);
     
     totalGanado += total;
@@ -1086,16 +1087,16 @@ function actualizarEstadisticas(ss) {
   
   var stats = [
     ['', ''],
-    ['ðŸ“… Total de DÃ­as', totalDias],
-    ['ðŸ’° Total Ganado', '$' + totalGanado.toFixed(2)],
-    ['ðŸ“Š Promedio Diario', '$' + promedioDiario.toFixed(2)],
-    ['âœ… Total de Tareas', totalTareas],
-    ['ðŸŽ¯ Promedio de Tareas/DÃ­a', promedioTareas.toFixed(1)],
-    ['ðŸ† Mejor DÃ­a', Utilities.formatDate(new Date(mejorDia.fecha), TIMEZONE, 'dd/MM/yyyy') + ' - $' + mejorDia.total.toFixed(2)],
-    ['ðŸ”¥ Mayor Racha', mayorRacha + ' dÃ­as'],
+    ['📅 Total de Días', totalDias],
+    ['💰 Total Ganado', '$' + totalGanado.toFixed(2)],
+    ['📊 Promedio Diario', '$' + promedioDiario.toFixed(2)],
+    ['✅ Total de Tareas', totalTareas],
+    ['🎯 Promedio de Tareas/Día', promedioTareas.toFixed(1)],
+    ['🏆 Mejor Día', Utilities.formatDate(new Date(mejorDia.fecha), TIMEZONE, 'dd/MM/yyyy') + ' - $' + mejorDia.total.toFixed(2)],
+    ['🔥 Mayor Racha', mayorRacha + ' días'],
     ['', ''],
-    ['ðŸ“ˆ ProyecciÃ³n Mensual', '$' + (promedioDiario * 30).toFixed(2)],
-    ['ðŸ“ˆ ProyecciÃ³n Anual', '$' + (promedioDiario * 365).toFixed(2)]
+    ['📈 Proyección Mensual', '$' + (promedioDiario * 30).toFixed(2)],
+    ['📈 Proyección Anual', '$' + (promedioDiario * 365).toFixed(2)]
   ];
   
   for (var i = 0; i < stats.length; i++) {
@@ -1132,11 +1133,11 @@ function obtenerDiaSemana(fecha) {
 }
 
 // ============================================
-// FUNCIÃ“N: Limpiar cache de clientes
+// FUNCIÓN: Limpiar cache de clientes
 // ============================================
 function limpiarCacheClientes() {
   clientesCache = null;
   clientesCacheTime = 0;
-  SpreadsheetApp.getUi().alert('âœ… Cache de clientes limpiado');
-  Logger.log('âœ… Cache de clientes limpiado');
+  SpreadsheetApp.getUi().alert('✅ Cache de clientes limpiado');
+  Logger.log('✅ Cache de clientes limpiado');
 }
