@@ -2,8 +2,8 @@
 // TASK MONEY MAKER - GOOGLE APPS SCRIPT MASTER
 // Sistema Multi-Cliente con Tabla Centralizada
 // EnseñandoLuke por Luke Alexander
+// ✅ VERSIÓN 2 - DÍA SE CALCULA CON FÓRMULA EN SHEETS
 // ACTUALIZADO: Envío automático de emails al registrarse
-// VERSIÓN FINAL - FUNCIONANDO CORRECTAMENTE ✅
 // ============================================
 
 // CONFIGURACIÓN: Spreadsheet ID de la plantilla maestra (donde está la tabla de clientes)
@@ -681,7 +681,6 @@ function doPost(e) {
     const totalTareasPosibles = 10;
     const porcentajeCumplimiento = (numTareasCompletadas / totalTareasPosibles) * 100;
     const semanaDelAnio = obtenerNumeroSemana(new Date(data.fecha));
-    const diaSemana = obtenerDiaSemana(new Date(data.fecha));
     
     // Calcular racha
     const racha = calcularRacha(sheetDatos, data.fecha);
@@ -696,9 +695,10 @@ function doPost(e) {
     
     Logger.log('Fila existente: ' + filaExistente);
     
+    // ✅ CAMBIO: No incluir diaSemana - se calcula con fórmula en Sheets
     var datosParaGuardar = {
       fecha: data.fecha,
-      diaSemana: diaSemana,
+      // diaSemana: OMITIDO - se calcula con fórmula =TEXT(A2,"dddd") en Google Sheets
       semana: semanaDelAnio,
       totalGanado: data.total,
       tareasCompletadas: data.tareasCompletadas,
@@ -825,6 +825,11 @@ function inicializarHojaDatos(sheet) {
   
   sheet.setRowHeight(1, 40);
   sheet.setFrozenRows(1);
+  
+  // ✅ CAMBIO 1: Agregar fórmula en B2 para que calcule el día automáticamente
+  sheet.getRange('B2').setFormula('=TEXT(A2,"dddd")');
+  
+  Logger.log('✅ Hoja inicializada con fórmula para día de la semana');
 }
 
 function buscarFila(sheet, fecha) {
@@ -872,22 +877,11 @@ function buscarFila(sheet, fecha) {
   return -1;
 }
 
-function actualizarFila(sheet, fila, datos) {
-  sheet.getRange(fila, 1).setValue(datos.fecha);
-  sheet.getRange(fila, 2).setValue(datos.diaSemana);
-  sheet.getRange(fila, 3).setValue(datos.semana);
-  sheet.getRange(fila, 4).setValue('$' + datos.totalGanado.toFixed(2));
-  sheet.getRange(fila, 5).setValue(datos.tareasCompletadas);
-  sheet.getRange(fila, 6).setValue(datos.numTareas);
-  sheet.getRange(fila, 7).setValue(datos.porcentaje.toFixed(1) + '%');
-  sheet.getRange(fila, 8).setValue(datos.racha + ' días');
-  sheet.getRange(fila, 9).setValue(datos.detalles);
-}
-
+// ✅ CAMBIO 2: Agregar nueva fila sin diaSemana - la fórmula la llenará
 function agregarNuevaFila(sheet, datos) {
   sheet.appendRow([
     datos.fecha,
-    datos.diaSemana,
+    '', // ✅ Columna B vacía - la fórmula la llenará automáticamente
     datos.semana,
     '$' + datos.totalGanado.toFixed(2),
     datos.tareasCompletadas,
@@ -896,6 +890,31 @@ function agregarNuevaFila(sheet, datos) {
     datos.racha + ' días',
     datos.detalles
   ]);
+  
+  // ✅ Copiar la fórmula de B2 a la nueva fila
+  var lastRow = sheet.getLastRow();
+  sheet.getRange('B' + lastRow).setFormula('=TEXT(A' + lastRow + ',"dddd")');
+  
+  Logger.log('✅ Nueva fila agregada. Fórmula de día copiada a B' + lastRow);
+}
+
+// ✅ CAMBIO 3: Actualizar fila sin tocar columna B - la fórmula se mantiene
+function actualizarFila(sheet, fila, datos) {
+  sheet.getRange(fila, 1).setValue(datos.fecha);
+  // ✅ NO modificar columna B - la fórmula se mantiene y recalcula automáticamente
+  sheet.getRange(fila, 3).setValue(datos.semana);
+  sheet.getRange(fila, 4).setValue('$' + datos.totalGanado.toFixed(2));
+  sheet.getRange(fila, 5).setValue(datos.tareasCompletadas);
+  sheet.getRange(fila, 6).setValue(datos.numTareas);
+  sheet.getRange(fila, 7).setValue(datos.porcentaje.toFixed(1) + '%');
+  sheet.getRange(fila, 8).setValue(datos.racha + ' días');
+  sheet.getRange(fila, 9).setValue(datos.detalles);
+  
+  // ✅ Asegurarse que la fórmula está en la columna B
+  if (!sheet.getRange(fila, 2).getFormula().includes('TEXT')) {
+    sheet.getRange(fila, 2).setFormula('=TEXT(A' + fila + ',"dddd")');
+    Logger.log('✅ Fórmula restaurada en B' + fila);
+  }
 }
 
 function formatearHoja(sheet) {
@@ -1209,18 +1228,6 @@ function crearTablaAnalisisSemana(ss) {
   Logger.log('✅ Tabla de Análisis Semanal creada');
 }
 
-// ============================================
-// ACTUALIZAR EN doPost (para que se ejecute automáticamente)
-// ============================================
-
-// En la función doPost, después de llamar a actualizarResumenSemanal:
-/*
-    // Actualizar resumen automáticamente
-    actualizarResumenSemanal(ss);
-    crearTablaAnalisisSemana(ss);  // ← AGREGAR ESTA LÍNEA
-    actualizarEstadisticas(ss);
-*/
-
 function actualizarEstadisticas(ss) {
   var sheetDatos = ss.getSheetByName('Datos Diarios');
   var sheetStats = ss.getSheetByName('Estadísticas');
@@ -1314,11 +1321,8 @@ function obtenerNumeroSemana(fecha) {
   return Math.ceil((dias + inicioAnio.getDay() + 1) / 7);
 }
 
-function obtenerDiaSemana(fecha) {
-  var dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-  var dayNumber = parseInt(Utilities.formatDate(fecha, TIMEZONE, 'u'));
-  return dias[dayNumber + 1 % 7];  // 👈 Sin restar -1, directamente con el +1 implícito
-}
+// ✅ CAMBIO 5: ELIMINADA la función obtenerDiaSemana
+// La función se elimina completamente porque el día se calcula con la fórmula =TEXT(A2,"dddd")
 
 // ============================================
 // FUNCIÓN: Limpiar cache de clientes
