@@ -8,10 +8,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Task Money Maker">
-    <link rel="manifest" href="https://piztian.github.io/moneymakerpublic/manifest.json">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23667eea' width='192' height='192'/><text x='50%' y='50%' font-size='100' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='central'>💰</text></svg>">
+
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23667eea' width='100' height='100' rx='20'/><text x='50%' y='50%' font-size='60' text-anchor='middle' dominant-baseline='central'>💰</text></svg>">
-    <title>🌟 Task Money Maker - EnseñandoLuke 🌟</title>
+    <title>💰 GESTOR DE TAREAS 💰</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -237,6 +236,7 @@
             gap: 15px;
             justify-content: center;
             margin-bottom: 20px;
+            flex-wrap: wrap;
         }
 
         .btn {
@@ -303,6 +303,16 @@
             }
         }
 
+        @keyframes fadeInModal {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideInModal {
+            from { transform: translate(-50%, -60%); opacity: 0; }
+            to { transform: translate(-50%, -50%); opacity: 1; }
+        }
+
         @media (max-width: 768px) {
             .header h1 {
                 font-size: 2rem;
@@ -312,26 +322,70 @@
                 flex-direction: column;
                 text-align: center;
             }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
+    <div id="welcomePopup" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 50px; border-radius: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center; z-index: 10000; animation: popupIn 0.5s ease-out;">
+        <div style="font-size: 4rem; margin-bottom: 20px; animation: bounce 0.6s ease-out;">🎉</div>
+        <h2 style="font-family: 'Comic Neue', cursive; font-size: 2.5rem; color: white; margin-bottom: 15px; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);">¡Bienvenido!</h2>
+        <p id="welcomeMessage" style="font-size: 1.5rem; color: white; font-weight: 600; margin-bottom: 10px;">Usuario</p>
+        <p style="font-size: 1.1rem; color: rgba(255,255,255,0.9);">Listo para completar tus tareas 💪</p>
+    </div>
+
     <!-- Estrellas decorativas -->
     <div id="stars"></div>
 
+    <style>
+        @keyframes popupIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        @keyframes popupOut {
+            from {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+        }
+
+        @keyframes bounce {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+    </style>
+
     <!-- Navegación superior -->
     <div style="position: fixed; top: 20px; left: 20px; z-index: 1000;">
-        <a href="https://capinimx.bitrix24.site/ensenandoluke/inicio/" style="display: inline-flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); padding: 8px 20px 8px 8px; border-radius: 50px; text-decoration: none; color: #667eea; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(0,0,0,0.1); font-family: 'Fredoka', sans-serif;">
-            <img src="https://raw.githubusercontent.com/piztian/capinimx/main/docs/capini%20logo%20transparente.png" alt="CapiniMX" style="height: 30px; width: auto;">
-            <span style="font-size: 1rem;">← Volver al Inicio</span>
+        <a id="btnSorpresa" href="#" style="display: inline-flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); padding: 10px 20px; border-radius: 50px; text-decoration: none; color: #667eea; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(0,0,0,0.1); font-family: 'Fredoka', sans-serif;">
+            🎲 Tarea Sorpresa
         </a>
     </div>
 
     <div style="position: fixed; top: 20px; right: 20px; z-index: 1000; display: flex; gap: 10px;">
-        <a href="https://capinimx.bitrix24.site/ensenandoluke/reportes/" style="display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); padding: 10px 20px; border-radius: 50px; text-decoration: none; color: #667eea; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(0,0,0,0.1); font-family: 'Fredoka', sans-serif; font-size: 0.95rem;">
+        <a id="reportesLink" href="#" style="display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); padding: 10px 20px; border-radius: 50px; text-decoration: none; color: #667eea; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(0,0,0,0.1); font-family: 'Fredoka', sans-serif; font-size: 0.95rem;">
             📊 Reportes
         </a>
-        <a href="https://capinimx.bitrix24.site/ensenandoluke/config/" style="display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); padding: 10px 20px; border-radius: 50px; text-decoration: none; color: #667eea; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(0,0,0,0.1); font-family: 'Fredoka', sans-serif; font-size: 0.95rem;">
+        <a id="configLink" href="#" style="display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); padding: 10px 20px; border-radius: 50px; text-decoration: none; color: #667eea; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(0,0,0,0.1); font-family: 'Fredoka', sans-serif; font-size: 0.95rem;">
             ⚙️ Config
         </a>
     </div>
@@ -348,7 +402,7 @@
                     por Luke Alexander 🌟
                 </div>
             </div>
-            <h1>💰 TASK MONEY MAKER 💰</h1>
+            <h1>💰 GESTOR DE TAREAS 💰</h1>
             <div style="font-size: 1.5rem; color: rgba(255,255,255,0.95); margin-top: 10px; font-weight: 600;">
                 🌟 Mis Tareas del Día 🌟
             </div>
@@ -384,58 +438,143 @@
         <div class="controls">
             <button class="btn" onclick="resetDay()">🔄 Nuevo Día</button>
             <button class="btn btn-primary" onclick="saveToGoogleSheets()">💾 Guardar Progreso</button>
+            <button class="btn" onclick="abrirModalTareaExtraordinaria()" style="background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); color: white;">✨ Tarea Extraordinaria</button>
+        </div>
+
+        <!-- Modal para Tarea Extraordinaria -->
+        <div id="modalTareaExtra" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 5000; animation: fadeInModal 0.3s ease-out;">
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 40px; border-radius: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-width: 500px; width: 90%; animation: slideInModal 0.4s ease-out;">
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                    <h2 style="font-family: 'Comic Neue', cursive; font-size: 2rem; color: #667eea; margin: 0;">✨ Tarea Extraordinaria</h2>
+                    <button onclick="cerrarModalTareaExtra()" style="background: none; border: none; font-size: 2rem; cursor: pointer; color: #999;">×</button>
+                </div>
+
+                <p style="color: #666; margin-bottom: 20px; font-size: 1.1rem;">Agrega una tarea especial que completaste hoy 🎯</p>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">Nombre de la tarea:</label>
+                    <input type="text" id="nombreTareaExtra" placeholder="Ej: Limpiar el garaje" style="width: 100%; padding: 12px 15px; border: 2px solid #ddd; border-radius: 12px; font-size: 1rem; font-family: 'Fredoka', sans-serif; transition: border-color 0.3s ease; box-sizing: border-box;" onfocus="this.style.borderColor='#667eea'" onblur="this.style.borderColor='#ddd'">
+                </div>
+
+                <div style="margin-bottom: 25px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">Valor ($):</label>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <input type="number" id="valorTareaExtra" placeholder="5.00" min="0" step="0.50" style="flex: 1; padding: 12px 15px; border: 2px solid #ddd; border-radius: 12px; font-size: 1rem; font-family: 'Fredoka', sans-serif; transition: border-color 0.3s ease; box-sizing: border-box;" onfocus="this.style.borderColor='#667eea'" onblur="this.style.borderColor='#ddd'">
+                        <span style="font-size: 1.5rem;">💰</span>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 15px;">
+                    <button onclick="agregarTareaExtraordinaria()" style="flex: 1; background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); color: white; border: none; padding: 15px 30px; border-radius: 50px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; font-family: 'Fredoka', sans-serif;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                        ✨ Agregar
+                    </button>
+                    <button onclick="cerrarModalTareaExtra()" style="flex: 1; background: #f0f0f0; color: #333; border: none; padding: 15px 30px; border-radius: 50px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; font-family: 'Fredoka', sans-serif;">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
         </div>
 
     </div>
 
     <script>
         // ============================================
-        // REGISTRAR SERVICE WORKER - PWA
+        // FUNCIÓN: Obtener fecha con zona horaria México
         // ============================================
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('https://piztian.github.io/moneymakerpublic/service-worker.js', {
-                    scope: '/'
-                }).then(registration => {
-                    console.log('✅ Service Worker registrado:', registration);
-                    
-                    // Detectar actualizaciones
-                    registration.addEventListener('updatefound', () => {
-                        const newWorker = registration.installing;
-                        newWorker.addEventListener('statechange', () => {
-                            if (newWorker.state === 'activated') {
-                                console.log('🆕 Nueva versión disponible');
-                                mostrarAlerta('✨ Nueva versión disponible. Recarga la página.', 'success');
-                            }
-                        });
-                    });
-                }).catch(error => {
-                    console.log('⚠️ Error registrando Service Worker:', error);
-                });
+        function obtenerFechaCorrectaMexico() {
+            const hoje = new Date();
+            const formatter = new Intl.DateTimeFormat('es-MX', {
+                timeZone: 'America/Mexico_City',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
             });
-
-            // Detectar cuando la app está instalada
-            window.addEventListener('beforeinstallprompt', event => {
-                event.preventDefault();
-                window.deferredPrompt = event;
-                console.log('📱 App lista para instalar');
-            });
-
-            window.addEventListener('appinstalled', () => {
-                console.log('✅ PWA instalada');
-                window.deferredPrompt = null;
-            });
+            const partes = formatter.formatToParts(hoje);
+            const año = partes.find(p => p.type === 'year').value;
+            const mes = partes.find(p => p.type === 'month').value;
+            const día = partes.find(p => p.type === 'day').value;
+            return `${año}-${mes}-${día}`;
         }
 
         // ============================================
-        // CONFIGURACIÓN Y LÓGICA DEL DASHBOARD
+        // CONFIGURACIÓN GLOBAL - EJECUTA PRIMERO
         // ============================================
-        const urlParams = new URLSearchParams(window.location.search);
-        const clienteId = urlParams.get('cliente') || 'luke-alexander';
         
         // URL del script
         const MASTER_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyNdna02iNhTZR97mFJOBqpuQwPo6iO40ZpVr1vO5VnpUy8bdljtZiqpOvrpjB0tBNZ/exec";
+        
+        // Obtener cliente de URL o localStorage
+        const urlParams = new URLSearchParams(window.location.search);
+        window.clienteId = urlParams.get('cliente');
+        
+        console.log('window.clienteId desde URL:', window.clienteId);
+        
+        // Si viene en URL, guardar en localStorage
+        if (window.clienteId) {
+            localStorage.setItem('clienteActual', window.clienteId);
+            console.log('✅ Guardado en localStorage:', window.clienteId);
+        } else {
+            // Si no viene en URL, usar el de localStorage
+            window.clienteId = localStorage.getItem('clienteActual') || 'luke-alexander';
+            console.log('✅ Usando localStorage o default:', window.clienteId);
+        }
+        
+        console.log('window.clienteId FINAL:', window.clienteId);
+        
+        // Actualizar URL si no tiene el parámetro (para futuras navegaciones)
+        if (!urlParams.get('cliente')) {
+            window.history.replaceState({}, document.title, `?cliente=${window.clienteId}`);
+        }
 
+        // ============================================
+        // LISTENERS - EJECUTAN CUANDO DOM ESTÉ LISTO
+        // ============================================
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('✅ DOMContentLoaded - clienteId:', window.clienteId);
+            
+            // Popup de bienvenida
+            const welcomePopup = document.getElementById('welcomePopup');
+            const welcomeMessage = document.getElementById('welcomeMessage');
+            
+            if (welcomePopup && welcomeMessage) {
+                const nombreFormato = window.clienteId
+                    .split('-')
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(' ');
+                
+                welcomeMessage.textContent = `¡Hola ${nombreFormato}!`;
+                welcomePopup.style.display = 'block';
+                
+                setTimeout(() => {
+                    welcomePopup.style.animation = 'popupOut 0.5s ease-out forwards';
+                    setTimeout(() => {
+                        welcomePopup.style.display = 'none';
+                    }, 500);
+                }, 5000);
+            }
+            
+            // Actualizar links de navegación
+            const baseUrl = 'https://capinimx.bitrix24.site/ensenandoluke';
+            
+            const btnSorpresa = document.getElementById('btnSorpresa');
+            const reportesLink = document.getElementById('reportesLink');
+            const configLink = document.getElementById('configLink');
+            
+            if (btnSorpresa) {
+                btnSorpresa.href = baseUrl + '/tareasorpresa/?cliente=' + window.clienteId;
+            }
+            if (reportesLink) {
+                reportesLink.href = baseUrl + '/reportes/?cliente=' + window.clienteId;
+            }
+            if (configLink) {
+                configLink.href = baseUrl + '/config/?cliente=' + window.clienteId;
+            }
+        });
+    </script>
+
+    <script>
         // Base de todas las tareas disponibles
         const tareasDisponibles = [
             { id: 1, name: "Hacer tareas escolares", icon: "📚", value: 10.00, time: "Tarde" },
@@ -457,54 +596,47 @@
             { id: 17, name: "Practicar un instrumento musical", icon: "🎵", value: 3.00, time: "Tarde" },
             { id: 18, name: "Ayudar a un hermano/hermana", icon: "🤝", value: 2.00, time: "Todo el día" },
             { id: 19, name: "Organizar su habitación", icon: "🏠", value: 3.00, time: "Noche" },
-            { id: 20, name: "Preparar su mochila para el colegio", icon: "🎒", value: 1.00, time: "Noche" }
+            { id: 20, name: "Preparar su mochila para el colegio", icon: "🎒", value: 1.00, time: "Noche" },
+            { id: 21, name: "Resolver problemas de matemáticas", icon: "🔢", value: 2.50, time: "Tarde" },
+            { id: 22, name: "Estudiar tablas de multiplicar", icon: "📊", value: 2.00, time: "Tarde" },
+            { id: 23, name: "Leer un cuento o novela", icon: "📖", value: 2.00, time: "Tarde" },
+            { id: 24, name: "Hacer ejercicios de escritura", icon: "✏️", value: 2.50, time: "Tarde" },
+            { id: 25, name: "Experimento científico", icon: "🔬", value: 3.50, time: "Tarde" },
+            { id: 26, name: "Investigar tema de ciencias", icon: "🧪", value: 2.50, time: "Tarde" }
         ];
 
         // Tareas dinámicas (se cargan desde configuración)
         let tasks = [];
 
         // Estado de las tareas
-        let taskStates = {};
+        window.taskStates = {};
+        window.datosGlobales = []; // ← AGREGAR ESTA LÍNEA para guardar datos de Google Sheets
         let weeklyData = [];
+        
+        // Array para tareas extraordinarias del día
+        let tareasExtraordinarias = [];
+
+        // Variables de auto-guardado
+        let autoSaveTimer = null;
+        let lastSaveTime = null;
+        let hasUnsavedChanges = false;
 
         // Inicializar
         function init() {
             cargarConfiguracionTareas();
             loadFromLocalStorage();
-            cargarDatosDeGoogleSheets(); // 🔄 Sincronizar con Sheets
             renderTasks();
             updateStats();
             updateDate();
             createStars();
         }
 
-        // Cargar configuración de tareas desde Google Sheets o localStorage
-        async function cargarConfiguracionTareas() {
-            try {
-                // Primero intenta cargar desde Sheets
-                const response = await fetch(`${MASTER_SCRIPT_URL}?cliente=${clienteId}`);
-                const data = await response.json();
-
-                if (data.configuracion) {
-                    // Si hay configuración en Sheets, usarla
-                    const config = JSON.parse(data.configuracion);
-                    localStorage.setItem(`tasksConfig_${clienteId}`, JSON.stringify(config)); // Guardar localmente también
-                    tasks = tareasDisponibles
-                        .filter(tarea => config[tarea.id] && config[tarea.id].activa)
-                        .map(tarea => ({
-                            ...tarea,
-                            value: config[tarea.id].precio || tarea.value
-                        }));
-                    return;
-                }
-            } catch (error) {
-                console.log('No hay configuración en Sheets, usando localStorage...');
-            }
-
-            // Si no hay en Sheets, usar localStorage
-            const configGuardada = localStorage.getItem(`tasksConfig_${clienteId}`);
+        // Cargar configuración de tareas desde localStorage
+        function cargarConfiguracionTareas() {
+            const configGuardada = localStorage.getItem(`tasksConfig_${window.clienteId}`);
             
             if (configGuardada) {
+                // Usar configuración personalizada
                 const config = JSON.parse(configGuardada);
                 tasks = tareasDisponibles
                     .filter(tarea => config[tarea.id] && config[tarea.id].activa)
@@ -515,48 +647,6 @@
             } else {
                 // Configuración por defecto (primeras 7 tareas)
                 tasks = tareasDisponibles.slice(0, 7);
-            }
-        }
-
-        // Cargar datos de Google Sheets en tiempo real
-        async function cargarDatosDeGoogleSheets() {
-            try {
-                const response = await fetch(`${MASTER_SCRIPT_URL}?cliente=${clienteId}`);
-                const data = await response.json();
-
-                if (data.datosDiarios && data.datosDiarios.length > 1) {
-                    const hoy = new Date().toISOString().split('T')[0];
-                    
-                    // Buscar datos de hoy en Google Sheets
-                    const datosHoy = data.datosDiarios.find(row => {
-                        if (!row[0]) return false;
-                        return row[0].includes(hoy.split('-')[2]) && 
-                               row[0].includes(hoy.split('-')[1]);
-                    });
-
-                    if (datosHoy) {
-                        // Si hay datos más recientes en Sheets, actualizarlos localmente
-                        const detalles = datosHoy[8]; // Columna de detalles
-                        if (detalles) {
-                            try {
-                                const estadoRemoto = JSON.parse(detalles);
-                                // Comparar si hay cambios
-                                const estadoLocal = JSON.parse(localStorage.getItem(`taskStates_${clienteId}`) || '{}');
-                                
-                                if (JSON.stringify(estadoRemoto) !== JSON.stringify(estadoLocal)) {
-                                    console.log('✅ Sincronizando cambios desde otro dispositivo...');
-                                    taskStates = estadoRemoto;
-                                    renderTasks();
-                                    updateStats();
-                                }
-                            } catch (e) {
-                                console.log('No hay detalles para sincronizar');
-                            }
-                        }
-                    }
-                }
-            } catch (error) {
-                console.error('Error al cargar desde Sheets:', error);
             }
         }
 
@@ -577,9 +667,16 @@
 
         // Actualizar fecha
         function updateDate() {
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            const today = new Date().toLocaleDateString('es-ES', options);
-            document.getElementById('dateDisplay').textContent = today.charAt(0).toUpperCase() + today.slice(1);
+            const hoje = new Date();
+            const formatter = new Intl.DateTimeFormat('es-MX', {
+                timeZone: 'America/Mexico_City',
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            const fechaFormato = formatter.format(hoje);
+            document.getElementById('dateDisplay').textContent = fechaFormato.charAt(0).toUpperCase() + fechaFormato.slice(1);
         }
 
         // Renderizar tareas
@@ -608,6 +705,38 @@
 
                 grid.appendChild(card);
             });
+
+            // Renderizar tareas extraordinarias
+            tareasExtraordinarias.forEach((tarea, idx) => {
+                const card = document.createElement('div');
+                card.className = 'task-card completed';
+                card.style.animationDelay = ((tasks.length + idx) * 0.05) + 's';
+                card.style.background = 'linear-gradient(135deg, #f6d365 0%, #fda085 100%)';
+
+                card.innerHTML = `
+                    <div class="task-checkbox">✓</div>
+                    <div class="task-icon">✨</div>
+                    <div class="task-info">
+                        <div class="task-name">${tarea.nombre}</div>
+                        <div class="task-time">Tarea Extraordinaria</div>
+                    </div>
+                    <div class="task-value">$${parseFloat(tarea.valor).toFixed(2)}</div>
+                `;
+
+                // Agregar botón de eliminar
+                const btnEliminar = document.createElement('button');
+                btnEliminar.innerHTML = '✕';
+                btnEliminar.style.cssText = 'background: rgba(255,255,255,0.3); border: none; color: white; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; font-weight: bold; transition: all 0.3s ease;';
+                btnEliminar.onmouseover = () => btnEliminar.style.background = 'rgba(255,255,255,0.5)';
+                btnEliminar.onmouseout = () => btnEliminar.style.background = 'rgba(255,255,255,0.3)';
+                btnEliminar.onclick = (e) => {
+                    e.stopPropagation();
+                    eliminarTareaExtraordinaria(idx);
+                };
+
+                card.appendChild(btnEliminar);
+                grid.appendChild(card);
+            });
         }
 
         // Alternar estado de tarea
@@ -622,8 +751,72 @@
             renderTasks();
             updateStats();
             saveToLocalStorage();
-            hasUnsavedChanges = true;
-            actualizarIndicadorSincronizacion(false);
+            
+            // 🔥 GUARDAR AUTOMÁTICAMENTE EN GOOGLE SHEETS CADA VEZ QUE SE MARCA UNA TAREA
+            guardarEnGoogleSheetsAhora();
+        }
+
+        // ============================================
+        // FUNCIONES PARA TAREAS EXTRAORDINARIAS
+        // ============================================
+
+        function abrirModalTareaExtraordinaria() {
+            const modal = document.getElementById('modalTareaExtra');
+            const input1 = document.getElementById('nombreTareaExtra');
+            const input2 = document.getElementById('valorTareaExtra');
+            
+            // Limpiar inputs
+            input1.value = '';
+            input2.value = '';
+            
+            modal.style.display = 'block';
+            input1.focus();
+        }
+
+        function cerrarModalTareaExtra() {
+            document.getElementById('modalTareaExtra').style.display = 'none';
+        }
+
+        function agregarTareaExtraordinaria() {
+            const nombre = document.getElementById('nombreTareaExtra').value.trim();
+            const valor = document.getElementById('valorTareaExtra').value.trim();
+
+            if (!nombre || !valor) {
+                alert('⚠️ Por favor completa todos los campos');
+                return;
+            }
+
+            const valorNumerico = parseFloat(valor);
+            if (isNaN(valorNumerico) || valorNumerico < 0) {
+                alert('⚠️ El valor debe ser un número válido');
+                return;
+            }
+
+            // Agregar tarea extraordinaria
+            tareasExtraordinarias.push({
+                nombre: nombre,
+                valor: valorNumerico
+            });
+
+            // Limpiar y cerrar
+            cerrarModalTareaExtra();
+            renderTasks();
+            updateStats();
+            saveToLocalStorage();
+            
+            createConfetti();
+            playSound();
+            
+            // Guardar en Google Sheets
+            guardarEnGoogleSheetsAhora();
+        }
+
+        function eliminarTareaExtraordinaria(idx) {
+            tareasExtraordinarias.splice(idx, 1);
+            renderTasks();
+            updateStats();
+            saveToLocalStorage();
+            guardarEnGoogleSheetsAhora();
         }
 
         // Crear confetti
@@ -651,14 +844,21 @@
         // Actualizar estadísticas
         function updateStats() {
             const completed = Object.values(taskStates).filter(Boolean).length;
-            const earnedToday = tasks.reduce((sum, task) => {
+            const earnedFromTasks = tasks.reduce((sum, task) => {
                 return sum + (taskStates[task.id] ? task.value : 0);
             }, 0);
+            
+            // Sumar tareas extraordinarias
+            const earnedFromExtra = tareasExtraordinarias.reduce((sum, tarea) => {
+                return sum + parseFloat(tarea.valor);
+            }, 0);
+            
+            const earnedToday = earnedFromTasks + earnedFromExtra;
 
             const weeklyTotal = calculateWeeklyTotal();
             const progress = tasks.length > 0 ? (completed / tasks.length) * 100 : 0;
 
-            document.getElementById('completedCount').textContent = completed;
+            document.getElementById('completedCount').textContent = completed + tareasExtraordinarias.length;
             document.getElementById('earnedToday').textContent = '$' + earnedToday.toFixed(2);
             document.getElementById('weeklyTotal').textContent = '$' + weeklyTotal.toFixed(2);
             
@@ -667,40 +867,110 @@
             progressBar.textContent = Math.round(progress) + '%';
         }
 
-        // Calcular total semanal
+        // Calcular total semanal - MEJORADO para leer de Google Sheets
         function calculateWeeklyTotal() {
-            const todayEarned = tasks.reduce((sum, task) => {
+            const earnedFromTasks = tasks.reduce((sum, task) => {
                 return sum + (taskStates[task.id] ? task.value : 0);
             }, 0);
-
-            const weekStart = new Date();
-            weekStart.setDate(weekStart.getDate() - weekStart.getDay());
             
-            const weeklySum = weeklyData
-                .filter(day => new Date(day.date) >= weekStart)
-                .reduce((sum, day) => sum + day.total, 0);
+            const earnedFromExtra = tareasExtraordinarias.reduce((sum, tarea) => {
+                return sum + parseFloat(tarea.valor);
+            }, 0);
 
+            const todayEarned = earnedFromTasks + earnedFromExtra;
+
+            // Obtener datos de esta semana desde Google Sheets
+            let weeklySum = 0;
+            
+            if (window.datosGlobales && window.datosGlobales.length > 0) {
+                const hoje = new Date();
+                const weekStart = new Date(hoje);
+                weekStart.setDate(weekStart.getDate() - weekStart.getDay()); // Inicio de semana (domingo)
+                const weekEnd = new Date(weekStart);
+                weekEnd.setDate(weekEnd.getDate() + 6); // Fin de semana (sábado)
+                
+                console.log('📅 Calculando semana de', weekStart, 'a', weekEnd);
+                
+                // datosGlobales tiene estructura: [fecha, día, semana, total, tareas, ...]
+                // ⚠️ IMPORTANTE: La fila 0 son ENCABEZADOS, empezar desde 1
+                for (let i = 1; i < window.datosGlobales.length; i++) {
+                    const fila = window.datosGlobales[i];
+                    
+                    // Saltar si la fila está vacía
+                    if (!fila || fila.length < 4) {
+                        console.log('⏭️ Saltando fila vacía', i);
+                        continue;
+                    }
+                    
+                    try {
+                        const fecha = new Date(fila[0]);
+                        const totalStr = fila[3].toString().replace('$', '').trim();
+                        const total = parseFloat(totalStr) || 0;
+                        
+                        console.log('📊 Fila ' + i + ':', {
+                            fecha: fila[0],
+                            dia: fila[1],
+                            total: total,
+                            enRango: fecha >= weekStart && fecha <= weekEnd
+                        });
+                        
+                        if (fecha >= weekStart && fecha <= weekEnd) {
+                            weeklySum += total;
+                            console.log('✅ Agregando día', fila[1], ':', total, '| Total acumulado:', weeklySum);
+                        }
+                    } catch (e) {
+                        console.log('❌ Error procesando fila ' + i + ':', e.message);
+                    }
+                }
+            } else {
+                console.log('⚠️ No hay datosGlobales disponibles');
+            }
+
+            console.log('💰 Total semanal de Google Sheets:', weeklySum);
+            console.log('💰 Ganado hoy:', todayEarned);
+            console.log('💰 TOTAL FINAL:', weeklySum + todayEarned);
+            
             return weeklySum + todayEarned;
         }
 
         // Resetear día
         function resetDay() {
             if (confirm('¿Estás seguro de que quieres reiniciar el día?')) {
-                const today = new Date().toDateString();
-                const earnedToday = tasks.reduce((sum, task) => {
+                const hoje = new Date();
+                const formatter = new Intl.DateTimeFormat('es-MX', {
+                    timeZone: 'America/Mexico_City',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit'
+                });
+                const partes = formatter.formatToParts(hoje);
+                const año = partes.find(p => p.type === 'year').value;
+                const mes = partes.find(p => p.type === 'month').value;
+                const día = partes.find(p => p.type === 'day').value;
+                const today = `${año}-${mes}-${día}`;
+
+                const earnedFromTasks = tasks.reduce((sum, task) => {
                     return sum + (taskStates[task.id] ? task.value : 0);
                 }, 0);
+                
+                const earnedFromExtra = tareasExtraordinarias.reduce((sum, tarea) => {
+                    return sum + parseFloat(tarea.valor);
+                }, 0);
+
+                const earnedToday = earnedFromTasks + earnedFromExtra;
 
                 if (earnedToday > 0) {
                     weeklyData.push({
                         date: today,
                         total: earnedToday,
-                        tasks: { ...taskStates }
+                        tasks: { ...taskStates },
+                        tareasExtra: [...tareasExtraordinarias]
                     });
-                    localStorage.setItem(`weeklyData_${clienteId}`, JSON.stringify(weeklyData));
+                    localStorage.setItem(`weeklyData_${window.clienteId}`, JSON.stringify(weeklyData));
                 }
 
-                taskStates = {};
+                window.taskStates = {};
+                tareasExtraordinarias = [];
                 renderTasks();
                 updateStats();
                 saveToLocalStorage();
@@ -709,62 +979,199 @@
 
         // Guardar en localStorage
         function saveToLocalStorage() {
-            localStorage.setItem(`taskStates_${clienteId}`, JSON.stringify(taskStates));
-            localStorage.setItem(`lastUpdate_${clienteId}`, new Date().toDateString());
+            const hoje = new Date();
+            const formatter = new Intl.DateTimeFormat('es-MX', {
+                timeZone: 'America/Mexico_City',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            });
+            const partes = formatter.formatToParts(hoje);
+            const año = partes.find(p => p.type === 'year').value;
+            const mes = partes.find(p => p.type === 'month').value;
+            const día = partes.find(p => p.type === 'day').value;
+            const today = `${año}-${mes}-${día}`;
+
+            localStorage.setItem(`taskStates_${window.clienteId}`, JSON.stringify(taskStates));
+            localStorage.setItem(`tareasExtra_${window.clienteId}`, JSON.stringify(tareasExtraordinarias));
+            localStorage.setItem(`lastUpdate_${window.clienteId}`, today);
         }
 
         // Cargar desde localStorage
         function loadFromLocalStorage() {
-            const saved = localStorage.getItem(`taskStates_${clienteId}`);
-            const lastUpdate = localStorage.getItem(`lastUpdate_${clienteId}`);
-            const today = new Date().toDateString();
+            const saved = localStorage.getItem(`taskStates_${window.clienteId}`);
+            const savedExtra = localStorage.getItem(`tareasExtra_${window.clienteId}`);
+            const lastUpdate = localStorage.getItem(`lastUpdate_${window.clienteId}`);
+            
+            const hoje = new Date();
+            const formatter = new Intl.DateTimeFormat('es-MX', {
+                timeZone: 'America/Mexico_City',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            });
+            const partes = formatter.formatToParts(hoje);
+            const año = partes.find(p => p.type === 'year').value;
+            const mes = partes.find(p => p.type === 'month').value;
+            const día = partes.find(p => p.type === 'day').value;
+            const today = `${año}-${mes}-${día}`;
 
             if (lastUpdate && lastUpdate !== today) {
                 // Es un nuevo día - guardar el día anterior automáticamente
-                const earnedYesterday = tasks.reduce((sum, task) => {
+                const earnedFromTasks = tasks.reduce((sum, task) => {
                     const states = JSON.parse(saved || '{}');
                     return sum + (states[task.id] ? task.value : 0);
                 }, 0);
+                
+                const earnedFromExtra = (JSON.parse(savedExtra || '[]')).reduce((sum, tarea) => {
+                    return sum + parseFloat(tarea.valor);
+                }, 0);
+
+                const earnedYesterday = earnedFromTasks + earnedFromExtra;
 
                 if (earnedYesterday > 0 && saved) {
                     // Guardar en Google Sheets automáticamente
-                    guardarDiaAnterior(lastUpdate, earnedYesterday, JSON.parse(saved));
+                    guardarDiaAnterior(lastUpdate, earnedYesterday, JSON.parse(saved), JSON.parse(savedExtra || '[]'));
                     
                     weeklyData.push({
                         date: lastUpdate,
                         total: earnedYesterday,
-                        tasks: JSON.parse(saved)
+                        tasks: JSON.parse(saved),
+                        tareasExtra: JSON.parse(savedExtra || '[]')
                     });
-                    localStorage.setItem(`weeklyData_${clienteId}`, JSON.stringify(weeklyData));
+                    localStorage.setItem(`weeklyData_${window.clienteId}`, JSON.stringify(weeklyData));
                 }
                 
                 // Limpiar tareas para el nuevo día
-                taskStates = {};
+                window.taskStates = {};
+                tareasExtraordinarias = [];
                 saveToLocalStorage();
             } else if (saved) {
-                taskStates = JSON.parse(saved);
+                window.taskStates = JSON.parse(saved);
+            }
+            
+            if (savedExtra) {
+                tareasExtraordinarias = JSON.parse(savedExtra);
             }
 
-            const weeklyDataSaved = localStorage.getItem(`weeklyData_${clienteId}`);
+            const weeklyDataSaved = localStorage.getItem(`weeklyData_${window.clienteId}`);
             if (weeklyDataSaved) {
                 weeklyData = JSON.parse(weeklyDataSaved);
             }
         }
 
-        // Guardar día anterior automáticamente en Google Sheets
-        async function guardarDiaAnterior(fecha, total, taskStates) {
+        // Cargar datos de Google Sheets
+        async function cargarDatosDeGoogleSheets() {
+            try {
+                console.log('📥 Cargando datos de Google Sheets para:', window.clienteId);
+                const response = await fetch(`${MASTER_SCRIPT_URL}?cliente=${window.clienteId}`);
+                const data = await response.json();
+
+                // ✅ GUARDAR TODOS LOS DATOS GLOBALES
+                if (data.datosDiarios && data.datosDiarios.length > 1) {
+                    window.datosGlobales = data.datosDiarios;
+                    console.log('✅ Datos globales guardados:', window.datosGlobales.length, 'registros');
+                }
+
+                const hoy = obtenerFechaCorrectaMexico();
+                console.log('🔍 Buscando datos de hoy:', hoy);
+                
+                // Buscar datos de hoy
+                const datosHoy = data.datosDiarios.find(row => {
+                    try {
+                        if (!row[0]) return false;
+                        
+                        // Convertir a fecha de forma segura
+                        let fechaFila;
+                        if (row[0] instanceof Date) {
+                            fechaFila = row[0].toISOString().split('T')[0];
+                        } else if (typeof row[0] === 'string') {
+                            fechaFila = row[0].split('T')[0];
+                        } else {
+                            return false;
+                        }
+                        
+                        console.log('Comparando:', fechaFila, 'con', hoy);
+                        return fechaFila === hoy;
+                    } catch (e) {
+                        console.log('Error procesando fila:', e);
+                        return false;
+                    }
+                });
+
+                if (datosHoy && datosHoy[8]) {
+                    // ✅ OPCIÓN A: Si hay datos de hoy en Google Sheets, cargarlos
+                    try {
+                        const estadoGuardado = JSON.parse(datosHoy[8]);
+                        console.log('✅ Datos de hoy cargados desde Sheets:', estadoGuardado);
+                        window.taskStates = estadoGuardado;
+                        // Actualizar localStorage con datos de Sheets
+                        saveToLocalStorage();
+                        renderTasks();
+                        updateStats();
+                    } catch (e) {
+                        console.log('⚠️ No hay detalles para cargar:', e);
+                    }
+                } else {
+                    // ✅ OPCIÓN A: Si NO hay datos de hoy en Google Sheets, borrar localStorage
+                    console.log('ℹ️ Sin datos de hoy en Google Sheets - Borrando localStorage');
+                    window.taskStates = {};
+                    tareasExtraordinarias = [];
+                    localStorage.removeItem(`taskStates_${window.clienteId}`);
+                    localStorage.removeItem(`tareasExtra_${window.clienteId}`);
+                    saveToLocalStorage();
+                    renderTasks();
+                    updateStats();
+                }
+            } catch (error) {
+                console.error('Error al cargar desde Sheets:', error);
+                // Si hay error de conexión, usar localStorage como fallback
+                const saved = localStorage.getItem(`taskStates_${window.clienteId}`);
+                const savedExtra = localStorage.getItem(`tareasExtra_${window.clienteId}`);
+                if (saved) {
+                    window.taskStates = JSON.parse(saved);
+                }
+                if (savedExtra) {
+                    tareasExtraordinarias = JSON.parse(savedExtra);
+                }
+                renderTasks();
+                updateStats();
+            }
+        }
+        
+        async function guardarDiaAnterior(fecha, total, taskStates, tareasExtra) {
             const scriptUrl = MASTER_SCRIPT_URL;
+            
+            // Asegurar que la fecha esté en formato YYYY-MM-DD
+            let fechaFormato;
+            if (typeof fecha === 'string' && fecha.includes('-')) {
+                // Si ya está en formato correcto, usarla
+                fechaFormato = fecha.split(' ')[0]; // Por si tiene texto adicional
+            } else {
+                // Si no, convertirla
+                const dateObj = new Date(fecha);
+                const formatter = new Intl.DateTimeFormat('es-MX', {
+                    timeZone: 'America/Mexico_City',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit'
+                });
+                const partes = formatter.formatToParts(dateObj);
+                const año = partes.find(p => p.type === 'year').value;
+                const mes = partes.find(p => p.type === 'month').value;
+                const día = partes.find(p => p.type === 'day').value;
+                fechaFormato = `${año}-${mes}-${día}`;
+            }
             
             const completedTasks = tasks
                 .filter(task => taskStates[task.id])
                 .map(task => task.name)
+                .concat(tareasExtra.map(t => t.nombre))
                 .join(', ');
 
             const data = {
-                clienteId: clienteId,
-                fecha: fecha.split(' ')[2] + '-' + 
-                        (new Date(fecha).getMonth() + 1).toString().padStart(2, '0') + '-' + 
-                        new Date(fecha).getFullYear(),
+                clienteId: window.clienteId,
+                fecha: fechaFormato,
                 total: total,
                 tareasCompletadas: completedTasks || 'Ninguna',
                 detalles: JSON.stringify(taskStates)
@@ -775,7 +1182,7 @@
                     method: 'POST',
                     body: JSON.stringify(data)
                 });
-                console.log('✅ Día anterior guardado automáticamente');
+                console.log('✅ Día anterior guardado automáticamente:', fechaFormato);
             } catch (error) {
                 console.error('Error al guardar día anterior:', error);
             }
@@ -785,15 +1192,23 @@
         async function saveToGoogleSheets() {
             const scriptUrl = MASTER_SCRIPT_URL;
             
-            const today = new Date().toISOString().split('T')[0];
-            const earnedToday = tasks.reduce((sum, task) => {
+            const today = obtenerFechaCorrectaMexico();
+            
+            const earnedFromTasks = tasks.reduce((sum, task) => {
                 return sum + (taskStates[task.id] ? task.value : 0);
             }, 0);
+            
+            const earnedFromExtra = tareasExtraordinarias.reduce((sum, tarea) => {
+                return sum + parseFloat(tarea.valor);
+            }, 0);
+            
+            const earnedToday = earnedFromTasks + earnedFromExtra;
 
-            const completedTasks = tasks.filter(task => taskStates[task.id]).map(task => task.name);
+            const completedTasks = tasks.filter(task => taskStates[task.id]).map(task => task.name)
+                .concat(tareasExtraordinarias.map(t => t.nombre));
 
             const data = {
-                clienteId: clienteId,
+                clienteId: window.clienteId,
                 fecha: today,
                 total: earnedToday,
                 tareasCompletadas: completedTasks.join(', '),
@@ -822,50 +1237,27 @@
             }
         }
 
-        // Variables de auto-guardado
-        let autoSaveTimer = null;
-        let lastSaveTime = null;
-        let hasUnsavedChanges = false;
-
-        // Inicializar al cargar
-        window.onload = () => {
-            init();
-            iniciarAutoGuardado();
-            configurarGuardadoAlSalir();
-            iniciarSincronizacionPeriodica(); // 🔄 Sincronizar cada 30s
-        };
-
-        // Sincronización periódica cada 30 segundos
-        function iniciarSincronizacionPeriodica() {
-            setInterval(() => {
-                cargarDatosDeGoogleSheets();
-            }, 30000); // 30 segundos
-        }
-
-        // Sistema de auto-guardado
-        function iniciarAutoGuardado() {
-            autoSaveTimer = setInterval(() => {
-                if (hasUnsavedChanges) {
-                    autoGuardar();
-                }
-            }, 5 * 60 * 1000);
-        }
-
-        // Auto-guardar
-        async function autoGuardar() {
+        // 🔥 GUARDAR AUTOMÁTICAMENTE EN GOOGLE SHEETS CADA VEZ QUE SE MARCA UNA TAREA
+        async function guardarEnGoogleSheetsAhora() {
             const scriptUrl = MASTER_SCRIPT_URL;
             
-            if (!scriptUrl) return;
-
-            const today = new Date().toISOString().split('T')[0];
-            const earnedToday = tasks.reduce((sum, task) => {
+            const today = obtenerFechaCorrectaMexico();
+            
+            const earnedFromTasks = tasks.reduce((sum, task) => {
                 return sum + (taskStates[task.id] ? task.value : 0);
             }, 0);
+            
+            const earnedFromExtra = tareasExtraordinarias.reduce((sum, tarea) => {
+                return sum + parseFloat(tarea.valor);
+            }, 0);
+            
+            const earnedToday = earnedFromTasks + earnedFromExtra;
 
-            const completedTasks = tasks.filter(task => taskStates[task.id]).map(task => task.name);
+            const completedTasks = tasks.filter(task => taskStates[task.id]).map(task => task.name)
+                .concat(tareasExtraordinarias.map(t => t.nombre));
 
             const data = {
-                clienteId: clienteId,
+                clienteId: window.clienteId,
                 fecha: today,
                 total: earnedToday,
                 tareasCompletadas: completedTasks.join(', '),
@@ -873,6 +1265,8 @@
             };
 
             try {
+                actualizarIndicadorSincronizacion(false);
+                
                 const response = await fetch(scriptUrl, {
                     method: 'POST',
                     body: JSON.stringify(data)
@@ -882,29 +1276,95 @@
                     hasUnsavedChanges = false;
                     lastSaveTime = new Date();
                     actualizarIndicadorSincronizacion(true);
+                    console.log('✅ Guardado automático en Google Sheets');
+                } else {
+                    console.error('❌ Error al guardar');
+                    actualizarIndicadorSincronizacion(false);
                 }
             } catch (error) {
-                console.error('Error en auto-guardado:', error);
+                console.error('❌ Error de conexión:', error);
                 actualizarIndicadorSincronizacion(false);
             }
         }
+
+        // Inicializar al cargar
+        window.onload = () => {
+            init();
+            cargarDatosDeGoogleSheets();
+            configurarGuardadoAlSalir();
+        };
 
         // Configurar guardado al salir
         function configurarGuardadoAlSalir() {
             window.addEventListener('beforeunload', (e) => {
                 if (hasUnsavedChanges) {
-                    autoGuardar();
+                    // PUNTO 2: Guardar automáticamente ANTES de salir
+                    console.log('⚠️ Cambios sin guardar - Guardando automáticamente antes de salir');
+                    autoGuardarSincronico();
+                    
+                    // Mostrar advertencia
                     e.preventDefault();
-                    e.returnValue = '¿Seguro que quieres salir?';
+                    e.returnValue = '💾 Tus cambios se están guardando...';
                     return e.returnValue;
                 }
             });
 
             document.addEventListener('visibilitychange', () => {
                 if (document.hidden && hasUnsavedChanges) {
-                    autoGuardar();
+                    console.log('👁️ Página oculta - Guardando automáticamente');
+                    autoGuardarSincronico();
                 }
             });
+        }
+
+        // Auto-guardar sincrónico (para beforeunload)
+        function autoGuardarSincronico() {
+            const scriptUrl = MASTER_SCRIPT_URL;
+            
+            if (!scriptUrl) return;
+
+            const today = obtenerFechaCorrectaMexico();
+            const earnedFromTasks = tasks.reduce((sum, task) => {
+                return sum + (taskStates[task.id] ? task.value : 0);
+            }, 0);
+            
+            const earnedFromExtra = tareasExtraordinarias.reduce((sum, tarea) => {
+                return sum + parseFloat(tarea.valor);
+            }, 0);
+            
+            const earnedToday = earnedFromTasks + earnedFromExtra;
+
+            const completedTasks = tasks.filter(task => taskStates[task.id]).map(task => task.name)
+                .concat(tareasExtraordinarias.map(t => t.nombre));
+
+            const data = {
+                clienteId: window.clienteId,
+                fecha: today,
+                total: earnedToday,
+                tareasCompletadas: completedTasks.join(', '),
+                detalles: JSON.stringify(taskStates)
+            };
+
+            try {
+                // Usar sendBeacon para garantizar que se envíe incluso si se cierra la pestaña
+                const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+                navigator.sendBeacon(scriptUrl, blob);
+                
+                hasUnsavedChanges = false;
+                console.log('✅ Guardado sincrónico completado al salir');
+            } catch (error) {
+                console.error('Error en guardado sincrónico:', error);
+                // Fallback: intentar con fetch
+                try {
+                    fetch(scriptUrl, {
+                        method: 'POST',
+                        body: JSON.stringify(data),
+                        keepalive: true
+                    });
+                } catch (e) {
+                    console.error('Error fallback:', e);
+                }
+            }
         }
 
         // Actualizar indicador
@@ -926,6 +1386,14 @@
                 indicador.style.color = '#856404';
             }
         }
+
+        // Cerrar modal al hacer click fuera
+        document.addEventListener('click', (e) => {
+            const modal = document.getElementById('modalTareaExtra');
+            if (e.target === modal) {
+                cerrarModalTareaExtra();
+            }
+        });
     </script>
 </body>
 </html>
