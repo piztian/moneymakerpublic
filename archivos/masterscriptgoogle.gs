@@ -22,9 +22,9 @@ const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
 function onOpen() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const menu = ss.addMenu('⚙️ Task Money Maker', [
-    { name: '📧 Enviar URLs a Nuevo Cliente', functionName: 'abrirDialogoEnvioEmail' },
-    { name: '🔄 Limpiar Cache de Clientes', functionName: 'limpiarCacheClientes' },
-    { name: '🔧 Actualizar Todas las Fórmulas', functionName: 'actualizarFormulas' },
+    { name: ' 📧 Enviar URLs a Nuevo Cliente', functionName: 'abrirDialogoEnvioEmail' },
+    { name: ' 🔄 Limpiar Cache de Clientes', functionName: 'limpiarCacheClientes' },
+    { name: ' 🔧 Actualizar Todas las Fórmulas', functionName: 'actualizarFormulas' },
     null, // Separador
     { name: '❓ Ayuda', functionName: 'mostrarAyuda' }
   ]);
@@ -425,16 +425,16 @@ function actualizarFormulas() {
       
       if (idCliente) {
         // Dashboard
-        sheet.getRange(i + 1, 6).setFormula(`=IF(A${i + 1}="","",CONCATENATE("https://capinimx.bitrix24.site/ensenandoluke/dashboardmoneytareas/?cliente=",A${i + 1}))`);
+        sheet.getRange(i + 1, 6).setFormula(`=IF(A${i + 1}="","",CONCATENATE("https://capinimx.bitrix24.site/ensenandoluke/dashboardmoneytareas/?cliente=",B${i + 1}))`);
         
         // Reportes
-        sheet.getRange(i + 1, 7).setFormula(`=IF(A${i + 1}="","",CONCATENATE("https://capinimx.bitrix24.site/ensenandoluke/reportes/?cliente=",A${i + 1}))`);
+        sheet.getRange(i + 1, 7).setFormula(`=IF(A${i + 1}="","",CONCATENATE("https://capinimx.bitrix24.site/ensenandoluke/reportes/?cliente=",B${i + 1}))`);
         
         // Config
-        sheet.getRange(i + 1, 8).setFormula(`=IF(A${i + 1}="","",CONCATENATE("https://capinimx.bitrix24.site/ensenandoluke/config/?cliente=",A${i + 1}))`);
+        sheet.getRange(i + 1, 8).setFormula(`=IF(A${i + 1}="","",CONCATENATE("https://capinimx.bitrix24.site/ensenandoluke/config/?cliente=",B${i + 1}))`);
         
         // Resumen
-        sheet.getRange(i + 1, 9).setFormula(`=IF(A${i + 1}="","",CONCATENATE("https://capinimx.bitrix24.site/ensenandoluke/resumensemanal/?cliente=",A${i + 1}))`);
+        sheet.getRange(i + 1, 9).setFormula(`=IF(A${i + 1}="","",CONCATENATE("https://capinimx.bitrix24.site/ensenandoluke/resumensemanal/?cliente=",B${i + 1}))`);
       }
     }
     
@@ -678,7 +678,7 @@ function doPost(e) {
     
     // Calcular datos adicionales
     const numTareasCompletadas = data.tareasCompletadas ? data.tareasCompletadas.split(',').filter(t => t.trim()).length : 0;
-    const totalTareasPosibles = 7;
+    const totalTareasPosibles = 10;
     const porcentajeCumplimiento = (numTareasCompletadas / totalTareasPosibles) * 100;
     const semanaDelAnio = obtenerNumeroSemana(new Date(data.fecha));
     const diaSemana = obtenerDiaSemana(new Date(data.fecha));
@@ -723,6 +723,7 @@ function doPost(e) {
     
     // Actualizar resumen automáticamente
     actualizarResumenSemanal(ss);
+    crearTablaAnalisisSemana(ss);
     actualizarEstadisticas(ss);
     
     Logger.log('=== FIN doPost ===');
@@ -945,6 +946,11 @@ function calcularRacha(sheet, fechaActual) {
   return racha;
 }
 
+// ============================================
+// FUNCIÓN MEJORADA: actualizarResumenSemanal
+// Lee de "Datos Diarios" y agrupa por semana
+// ============================================
+
 function actualizarResumenSemanal(ss) {
   var sheetDatos = ss.getSheetByName('Datos Diarios');
   var sheetResumen = ss.getSheetByName('Resumen Semanal');
@@ -955,6 +961,13 @@ function actualizarResumenSemanal(ss) {
   
   sheetResumen.clear();
   
+  // Si no hay datos diarios, no hacer nada
+  if (!sheetDatos || sheetDatos.getLastRow() < 2) {
+    Logger.log('❌ No hay datos en "Datos Diarios"');
+    return;
+  }
+  
+  // Encabezados mejorados
   var encabezados = ['Año-Semana', 'Total Ganado', 'Días Activos', 'Promedio Diario', 'Tareas Totales', '% Promedio', 'Mejor Día'];
   sheetResumen.appendRow(encabezados);
   
@@ -966,62 +979,119 @@ function actualizarResumenSemanal(ss) {
   sheetResumen.setRowHeight(1, 40);
   sheetResumen.setFrozenRows(1);
   
+  // LEER DATOS DE "DATOS DIARIOS"
   var data = sheetDatos.getDataRange().getValues();
   var semanas = {};
   
+  // Estructura de Datos Diarios:
+  // [0] Fecha, [1] Día, [2] Semana, [3] Total Ganado, [4] Tareas Completadas, 
+  // [5] # Tareas, [6] % Cumplimiento, [7] Racha, [8] Detalles
+  
+  Logger.log('🔥 Procesando ' + (data.length - 1) + ' filas de Datos Diarios');
+  
   for (var i = 1; i < data.length; i++) {
-    var fecha = new Date(data[i][0]);
-    var anio = fecha.getFullYear();
-    var semana = data[i][2];
-    var key = anio + '-S' + semana;
-    var total = parseFloat(data[i][3].toString().replace('$', ''));
+    if (!data[i][2]) continue; // Si no hay número de semana, saltar
+    
+    var fecha = data[i][0];
+    var dia = data[i][1];
+    var numeroSemana = data[i][2];
+    var anio = new Date(fecha).getFullYear();
+    var key = anio + '-S' + numeroSemana;
+    var total = parseFloat(data[i][3].toString().replace('$', '')) || 0;
     var numTareas = data[i][5];
-    // Leer porcentaje: si viene como "80.5%" convertir a 0.805
+    
+    // Leer porcentaje: puede venir como "80.5%" o "0.805"
     var porcentajeStr = data[i][6].toString().replace('%', '').trim();
-    var porcentaje = parseFloat(porcentajeStr) / 100; // Convertir a decimal: 80.5 -> 0.805
+    var porcentaje = parseFloat(porcentajeStr);
+    
+    // Si es muy pequeño (< 1), probablemente es decimal (0.805)
+    // Si es normal (> 1), es porcentaje (80.5)
+    if (porcentaje < 1 && porcentaje > 0) {
+      porcentaje = porcentaje; // Ya es decimal, dejarlo así
+    }
+    
+    Logger.log('Fila ' + i + ': ' + key + ' | ' + dia + ' | ' + numTareas + ' tareas | ' + porcentaje);
     
     if (!semanas[key]) {
       semanas[key] = {
         total: 0,
-        dias: 0,
+        dias: [],
+        diasActivos: 0,
         tareas: 0,
         porcentajes: [],
-        mejorDia: { fecha: fecha, total: total }
+        mejorDia: { fecha: fecha, total: total },
+        diasDetalle: {}  // Para ver qué días fueron
       };
     }
     
+    // Agregar información del día
+    semanas[key].dias.push({
+      fecha: fecha,
+      dia: dia,
+      total: total,
+      tareas: numTareas,
+      porcentaje: porcentaje
+    });
+    
     semanas[key].total += total;
-    semanas[key].dias++;
     semanas[key].tareas += numTareas;
     semanas[key].porcentajes.push(porcentaje);
+    
+    // Contar días activos (donde hay ganancias)
+    if (total > 0) {
+      semanas[key].diasActivos++;
+    }
+    
+    // Guardar detalle del día
+    semanas[key].diasDetalle[dia] = {
+      total: total,
+      tareas: numTareas,
+      porcentaje: porcentaje
+    };
     
     if (total > semanas[key].mejorDia.total) {
       semanas[key].mejorDia = { fecha: fecha, total: total };
     }
   }
   
+  // CREAR FILAS DEL RESUMEN
   var semanasOrdenadas = Object.keys(semanas).sort().reverse();
+  
+  Logger.log('📊 Total de semanas: ' + semanasOrdenadas.length);
   
   for (var j = 0; j < semanasOrdenadas.length; j++) {
     var key = semanasOrdenadas[j];
     var s = semanas[key];
-    var promedioDiario = s.total / s.dias;
-    var promedioPorcentaje = s.porcentajes.reduce((a, b) => a + b, 0) / s.porcentajes.length;
-    var mejorDia = Utilities.formatDate(s.mejorDia.fecha, TIMEZONE, 'dd/MM');
+    var promedioDiario = s.diasActivos > 0 ? s.total / s.diasActivos : 0;
+    var promedioPorcentaje = s.porcentajes.length > 0 
+      ? s.porcentajes.reduce((a, b) => a + b, 0) / s.porcentajes.length 
+      : 0;
+    var mejorDia = Utilities.formatDate(new Date(s.mejorDia.fecha), TIMEZONE, 'dd/MM');
     
-    // Guardar porcentaje como decimal (0.805) en lugar de porcentaje (80.5%)
-    // Así el frontend puede controlarlo correctamente
+    // Determinar formato del porcentaje promedio
+    var porcentajeGuardar;
+    if (promedioPorcentaje < 1) {
+      // Es decimal (0.7398) - dejar como está para que el frontend lo interprete
+      porcentajeGuardar = promedioPorcentaje * 100;
+    } else {
+      // Es porcentaje (73.98) - guardar como está
+      porcentajeGuardar = promedioPorcentaje;
+    }
+    
+    Logger.log('Semana ' + key + ': ' + s.diasActivos + ' días activos, ' + porcentajeGuardar + '% promedio');
+    
     sheetResumen.appendRow([
       key,
       '$' + s.total.toFixed(2),
-      s.dias,
+      s.diasActivos,  // Días ACTIVOS (con ganancias)
       '$' + promedioDiario.toFixed(2),
       s.tareas,
-      (promedioPorcentaje * 100), // Multiplicar por 100 para convertir decimal a porcentaje
+      porcentajeGuardar,  // Número puro (73.98)
       mejorDia + ' ($' + s.mejorDia.total.toFixed(2) + ')'
     ]);
   }
   
+  // FORMATEAR TABLA
   var lastRow = sheetResumen.getLastRow();
   if (lastRow > 1) {
     for (var i = 2; i <= lastRow; i++) {
@@ -1031,7 +1101,125 @@ function actualizarResumenSemanal(ss) {
   }
   
   sheetResumen.autoResizeColumns(1, 7);
+  
+  Logger.log('✅ Resumen Semanal actualizado correctamente');
 }
+
+// ============================================
+// NUEVA FUNCIÓN: Crear tabla de análisis por semana
+// Muestra qué días fueron y cuáles no
+// ============================================
+
+function crearTablaAnalisisSemana(ss) {
+  var sheetDatos = ss.getSheetByName('Datos Diarios');
+  var sheetAnalisis = ss.getSheetByName('Análisis Semanal');
+  
+  if (!sheetAnalisis) {
+    sheetAnalisis = ss.insertSheet('Análisis Semanal');
+  }
+  
+  sheetAnalisis.clear();
+  
+  if (!sheetDatos || sheetDatos.getLastRow() < 2) {
+    Logger.log('❌ No hay datos en "Datos Diarios"');
+    return;
+  }
+  
+  var data = sheetDatos.getDataRange().getValues();
+  var semanas = {};
+  
+  // Agrupar por semana
+  for (var i = 1; i < data.length; i++) {
+    if (!data[i][2]) continue;
+    
+    var fecha = data[i][0];
+    var dia = data[i][1];
+    var numeroSemana = data[i][2];
+    var anio = new Date(fecha).getFullYear();
+    var key = anio + '-S' + numeroSemana;
+    var total = parseFloat(data[i][3].toString().replace('$', '')) || 0;
+    var porcentajeStr = data[i][6].toString().replace('%', '').trim();
+    var porcentaje = parseFloat(porcentajeStr);
+    
+    if (!semanas[key]) {
+      semanas[key] = {
+        dias: {}
+      };
+    }
+    
+    semanas[key].dias[dia] = {
+      total: total,
+      porcentaje: porcentaje
+    };
+  }
+  
+  // CREAR TABLA DE ANÁLISIS
+  var diasOrden = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+  
+  // Primera fila: Semanas
+  var semanasOrdenadas = Object.keys(semanas).sort().reverse();
+  var encabezados = ['Día'];
+  semanasOrdenadas.forEach(semana => {
+    encabezados.push(semana);
+  });
+  
+  sheetAnalisis.appendRow(encabezados);
+  
+  var headerRange = sheetAnalisis.getRange(1, 1, 1, encabezados.length);
+  headerRange.setFontWeight('bold');
+  headerRange.setBackground('#667eea');
+  headerRange.setFontColor('#ffffff');
+  headerRange.setHorizontalAlignment('center');
+  sheetAnalisis.setRowHeight(1, 30);
+  
+  // Filas de días
+  diasOrden.forEach(dia => {
+    var fila = [dia];
+    semanasOrdenadas.forEach(semana => {
+      var datos = semanas[semana].dias[dia];
+      if (datos) {
+        fila.push('✅ ' + (datos.porcentaje * 100).toFixed(0) + '%');
+      } else {
+        fila.push('❌');
+      }
+    });
+    sheetAnalisis.appendRow(fila);
+  });
+  
+  // Formatear
+  sheetAnalisis.autoResizeColumns(1, encabezados.length);
+  
+  // Aplicar colores
+  var lastRow = sheetAnalisis.getLastRow();
+  for (var i = 2; i <= lastRow; i++) {
+    for (var j = 2; j <= encabezados.length; j++) {
+      var cell = sheetAnalisis.getRange(i, j);
+      var value = cell.getValue();
+      
+      if (value.toString().includes('✅')) {
+        cell.setBackground('#e6f7f0');
+        cell.setFontColor('#4ECDC4');
+      } else if (value.toString().includes('❌')) {
+        cell.setBackground('#ffe6e6');
+        cell.setFontColor('#FF6B9D');
+      }
+    }
+  }
+  
+  Logger.log('✅ Tabla de Análisis Semanal creada');
+}
+
+// ============================================
+// ACTUALIZAR EN doPost (para que se ejecute automáticamente)
+// ============================================
+
+// En la función doPost, después de llamar a actualizarResumenSemanal:
+/*
+    // Actualizar resumen automáticamente
+    actualizarResumenSemanal(ss);
+    crearTablaAnalisisSemana(ss);  // ← AGREGAR ESTA LÍNEA
+    actualizarEstadisticas(ss);
+*/
 
 function actualizarEstadisticas(ss) {
   var sheetDatos = ss.getSheetByName('Datos Diarios');
@@ -1140,4 +1328,28 @@ function limpiarCacheClientes() {
   clientesCacheTime = 0;
   SpreadsheetApp.getUi().alert('✅ Cache de clientes limpiado');
   Logger.log('✅ Cache de clientes limpiado');
+}
+
+// Función de prueba - para verificar que todo funciona
+function pruebaResumenSemanal() {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    
+    Logger.log('🧪 INICIANDO PRUEBA DE RESUMEN SEMANAL');
+    Logger.log('═══════════════════════════════════════');
+    
+    // Ejecutar la función mejorada
+    actualizarResumenSemanal(ss);
+    
+    Logger.log('═══════════════════════════════════════');
+    Logger.log('✅ PRUEBA COMPLETADA');
+    
+    // Mostrar resultado
+    SpreadsheetApp.getUi().alert('✅ Función ejecutada. Revisa los LOGS (Ctrl+Enter)');
+    
+  } catch (error) {
+    Logger.log('❌ ERROR: ' + error.toString());
+    Logger.log(error.stack);
+    SpreadsheetApp.getUi().alert('❌ Error: ' + error.toString());
+  }
 }
