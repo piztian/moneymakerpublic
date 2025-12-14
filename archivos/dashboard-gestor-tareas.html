@@ -883,11 +883,19 @@
             let weeklySum = 0;
             
             if (window.datosGlobales && window.datosGlobales.length > 0) {
-                const hoje = new Date();
-                const weekStart = new Date(hoje);
-                weekStart.setDate(weekStart.getDate() - weekStart.getDay()); // Inicio de semana (domingo)
-                const weekEnd = new Date(weekStart);
-                weekEnd.setDate(weekEnd.getDate() + 6); // Fin de semana (sábado)
+    const hoje = new Date();
+    const dia_semana = hoje.getDay(); // 0=domingo, 1=lunes, ..., 6=sábado
+    
+    // Calcular lunes (inicio de semana)
+    const dias_desde_lunes = (dia_semana === 0) ? 6 : (dia_semana - 1);
+    const weekStart = new Date(hoje);
+    weekStart.setDate(weekStart.getDate() - dias_desde_lunes);
+    weekStart.setHours(0, 0, 0, 0);
+    
+    // Calcular domingo (fin de semana)
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
+    weekEnd.setHours(23, 59, 59, 999);
                 
                 console.log('📅 Calculando semana de', weekStart, 'a', weekEnd);
                 
