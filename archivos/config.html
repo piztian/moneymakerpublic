@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚙️ Configuración - Task Money Maker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #FF6B9D;
+            --color-secondary: #FEC163;
+            --color-accent: #00D9FF;
+            --color-success: #4ECDC4;
+            --color-purple: #667eea;
+            --color-dark: #2D3748;
+            --color-light: #F7FAFC;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .top-nav {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.95);
+            padding: 10px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            color: var(--color-purple);
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            font-size: 0.95rem;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 80px auto 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-family: 'Baloo 2', cursive;
+            font-size: 3rem;
+            color: white;
+            text-shadow: 4px 4px 0px rgba(0,0,0,0.2);
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .config-section {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            margin-bottom: 30px;
+        }
+
+        .config-section h2 {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.8rem;
+            color: var(--color-dark);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        /* Tabla de tareas */
+        .tasks-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .tasks-table thead {
+            background: linear-gradient(135deg, var(--color-purple), #764ba2);
+            color: white;
+        }
+
+        .tasks-table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .tasks-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .tasks-table tbody tr:hover {
+            background: #f9f9f9;
+        }
+
+        .task-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .task-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .task-emoji {
+            font-size: 1.8rem;
+        }
+
+        .task-name {
+            flex: 1;
+            font-weight: 600;
+            color: var(--color-dark);
+        }
+
+        .task-price-input {
+            width: 100px;
+            padding: 8px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .task-price-input:focus {
+            outline: none;
+            border-color: var(--color-purple);
+        }
+
+        .price-currency {
+            color: #999;
+            font-weight: 600;
+            width: 30px;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid var(--color-purple);
+            margin-bottom: 20px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .summary-row:last-child {
+            margin-bottom: 0;
+            border-top: 2px solid var(--color-purple);
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+
+        .summary-label {
+            color: #666;
+            font-weight: 600;
+        }
+
+        .summary-value {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.3rem;
+            color: var(--color-primary);
+            font-weight: 800;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Baloo 2', cursive;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--color-purple), #764ba2);
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid var(--color-purple);
+            margin-top: 20px;
+        }
+
+        .info-box h3 {
+            font-size: 1.1rem;
+            color: var(--color-dark);
+            margin-bottom: 8px;
+        }
+
+        .info-box p {
+            margin: 5px 0;
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        .task-count {
+            background: var(--color-secondary);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .tasks-table {
+                font-size: 0.9rem;
+            }
+
+            .tasks-table th,
+            .tasks-table td {
+                padding: 10px 8px;
+            }
+
+            .task-price-input {
+                width: 70px;
+            }
+
+            .top-nav {
+                flex-direction: column;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-nav">
+        <a href="https://capinimx.bitrix24.site/ensenandoluke/dashboardmoneytareas/" class="nav-btn">
+            📊 Dashboard
+        </a>
+        <a href="https://capinimx.bitrix24.site/ensenandoluke/inicio/" class="nav-btn">
+            🏠 Inicio
+        </a>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>⚙️ Configuración</h1>
+            <p>Personaliza tus tareas y precios</p>
+        </div>
+
+        <div class="alert alert-success" id="alertSuccess"></div>
+
+        <!-- Gestión de Tareas -->
+        <div class="config-section">
+            <h2>📝 Tareas Disponibles</h2>
+            <p style="color: #666; margin-bottom: 20px;">Activa/desactiva tareas y ajusta sus precios</p>
+
+            <!-- Resumen -->
+            <div class="summary-card">
+                <div class="summary-row">
+                    <span class="summary-label">Tareas Activas:</span>
+                    <span class="task-count" id="tareasCuenta">0</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Total Posible por Día:</span>
+                    <span class="summary-value" id="totalDiario">$0.00</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Total Posible por Semana:</span>
+                    <span class="summary-value" id="totalSemanal">$0.00</span>
+                </div>
+            </div>
+
+            <!-- Tabla de tareas -->
+            <table class="tasks-table">
+                <thead>
+                    <tr>
+                        <th style="width: 40px;">✓</th>
+                        <th style="width: 40px;"></th>
+                        <th>Tarea</th>
+                        <th style="width: 150px;">Precio</th>
+                    </tr>
+                </thead>
+                <tbody id="tasksTableBody">
+                </tbody>
+            </table>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="guardarConfiguracion()">💾 Guardar Configuración</button>
+            </div>
+
+            <div class="info-box">
+                <h3>💡 Cómo funciona</h3>
+                <p>✓ Marca las casillas de las tareas que quieres activar</p>
+                <p>✓ Ajusta el precio de cada tarea</p>
+                <p>✓ Guarda los cambios</p>
+                <p>✓ Los totales se actualizan automáticamente</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const clienteId = urlParams.get('cliente') || 'luke-alexander';
+        const MASTER_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyNdna02iNhTZR97mFJOBqpuQwPo6iO40ZpVr1vO5VnpUy8bdljtZiqpOvrpjB0tBNZ/exec";
+
+        // Base de tareas extensa
+        const tareasDisponibles = [
+            { id: 1, nombre: "Hacer tareas escolares", emoji: "📚", precioDefault: 10.00 },
+            { id: 2, nombre: "Lavarse los dientes (mañana)", emoji: "🦷", precioDefault: 1.50 },
+            { id: 3, nombre: "Tender la cama", emoji: "🛏️", precioDefault: 2.00 },
+            { id: 4, nombre: "Bañarse", emoji: "🧼", precioDefault: 2.00 },
+            { id: 5, nombre: "Recoger ropa y zapatos", emoji: "👕", precioDefault: 2.00 },
+            { id: 6, nombre: "Recoger/ordenar juguetes", emoji: "🧹", precioDefault: 1.00 },
+            { id: 7, nombre: "Lavarse los dientes (noche)", emoji: "🦷", precioDefault: 1.50 },
+            { id: 8, nombre: "Limpiar su escritorio", emoji: "📖", precioDefault: 1.50 },
+            { id: 9, nombre: "Hacer la tarea sin que te lo pidan", emoji: "⭐", precioDefault: 3.00 },
+            { id: 10, nombre: "Ayudar con la compra", emoji: "🛒", precioDefault: 2.50 },
+            { id: 11, nombre: "Lavar los platos", emoji: "🍽️", precioDefault: 3.00 },
+            { id: 12, nombre: "Barrer el piso", emoji: "🧹", precioDefault: 2.50 },
+            { id: 13, nombre: "Regar las plantas", emoji: "🌱", precioDefault: 1.50 },
+            { id: 14, nombre: "Sacar la basura", emoji: "🗑️", precioDefault: 2.00 },
+            { id: 15, nombre: "Hacer ejercicio/actividad física", emoji: "🏃", precioDefault: 2.00 },
+            { id: 16, nombre: "Leer un libro", emoji: "📚", precioDefault: 2.00 },
+            { id: 17, nombre: "Practicar un instrumento musical", emoji: "🎵", precioDefault: 3.00 },
+            { id: 18, nombre: "Ayudar a un hermano/hermana", emoji: "🤝", precioDefault: 2.00 },
+            { id: 19, nombre: "Organizar su habitación", emoji: "🏠", precioDefault: 3.00 },
+            { id: 20, nombre: "Preparar su mochila para el colegio", emoji: "🎒", precioDefault: 1.00 }
+        ];
+
+        // Cargar configuración al iniciar
+        window.onload = () => {
+            cargarConfiguracion();
+            actualizarTabla();
+        };
+
+        function cargarConfiguracion() {
+            const configGuardada = localStorage.getItem(`tasksConfig_${clienteId}`);
+            if (configGuardada) {
+                window.configActual = JSON.parse(configGuardada);
+            } else {
+                // Configuración por defecto (primeras 7 tareas)
+                window.configActual = {};
+                tareasDisponibles.slice(0, 7).forEach(tarea => {
+                    window.configActual[tarea.id] = {
+                        activa: true,
+                        precio: tarea.precioDefault
+                    };
+                });
+            }
+        }
+
+        function actualizarTabla() {
+            const tbody = document.getElementById('tasksTableBody');
+            tbody.innerHTML = '';
+
+            tareasDisponibles.forEach(tarea => {
+                const config = window.configActual[tarea.id] || { activa: false, precio: tarea.precioDefault };
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <input type="checkbox" class="task-checkbox" 
+                            ${config.activa ? 'checked' : ''} 
+                            onchange="actualizarResumen()">
+                    </td>
+                    <td>
+                        <span class="task-emoji">${tarea.emoji}</span>
+                    </td>
+                    <td>
+                        <span class="task-name">${tarea.nombre}</span>
+                    </td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <span class="price-currency">$</span>
+                            <input type="number" class="task-price-input" 
+                                value="${config.precio.toFixed(2)}" 
+                                min="0" step="0.50" 
+                                onchange="actualizarResumen()" />
+                        </div>
+                    </td>
+                `;
+
+                // Guardar referencia para poder acceder después
+                const checkbox = tr.querySelector('input[type="checkbox"]');
+                const priceInput = tr.querySelector('input[type="number"]');
+                
+                checkbox.dataset.tareaId = tarea.id;
+                priceInput.dataset.tareaId = tarea.id;
+
+                tbody.appendChild(tr);
+            });
+
+            actualizarResumen();
+        }
+
+        function actualizarResumen() {
+            const checkboxes = document.querySelectorAll('.task-checkbox');
+            const priceInputs = document.querySelectorAll('.task-price-input');
+            
+            let tareasCuenta = 0;
+            let totalDiario = 0;
+
+            checkboxes.forEach((checkbox, idx) => {
+                const tareaId = parseInt(checkbox.dataset.tareaId);
+                const priceInput = document.querySelector(`input[type="number"][data-tarea-id="${tareaId}"]`);
+                
+                if (checkbox.checked) {
+                    tareasCuenta++;
+                    totalDiario += parseFloat(priceInput.value) || 0;
+                }
+            });
+
+            // Actualizar resumen
+            document.getElementById('tareasCuenta').textContent = tareasCuenta;
+            document.getElementById('totalDiario').textContent = '$' + totalDiario.toFixed(2);
+            document.getElementById('totalSemanal').textContent = '$' + (totalDiario * 7).toFixed(2);
+        }
+
+        async function guardarConfiguracion() {
+            const checkboxes = document.querySelectorAll('.task-checkbox');
+            const config = {};
+
+            checkboxes.forEach(checkbox => {
+                const tareaId = parseInt(checkbox.dataset.tareaId);
+                const priceInput = document.querySelector(`input[type="number"][data-tarea-id="${tareaId}"]`);
+                
+                config[tareaId] = {
+                    activa: checkbox.checked,
+                    precio: parseFloat(priceInput.value) || 0
+                };
+            });
+
+            // Guardar en localStorage
+            localStorage.setItem(`tasksConfig_${clienteId}`, JSON.stringify(config));
+            window.configActual = config;
+
+            // 🔄 Guardar también en Google Sheets
+            try {
+                const data = {
+                    clienteId: clienteId,
+                    tipo: 'CONFIGURACION_TAREAS',
+                    configuracion: JSON.stringify(config),
+                    fecha: new Date().toISOString()
+                };
+
+                await fetch(MASTER_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+
+                mostrarAlerta('✅ Configuración guardada en todos los dispositivos', 'success');
+            } catch (error) {
+                console.error('Error guardando en Sheets:', error);
+                mostrarAlerta('⚠️ Guardado localmente (reintenta más tarde para sincronizar)', 'success');
+            }
+        }
+
+        function mostrarAlerta(mensaje, tipo) {
+            const alert = document.getElementById('alertSuccess');
+            alert.textContent = mensaje;
+            alert.style.display = 'block';
+
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
