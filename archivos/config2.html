@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚙️ Configuración - Task Money Maker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #FF6B9D;
+            --color-secondary: #FEC163;
+            --color-accent: #00D9FF;
+            --color-success: #4ECDC4;
+            --color-purple: #667eea;
+            --color-dark: #2D3748;
+            --color-light: #F7FAFC;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .top-nav {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.95);
+            padding: 10px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            color: var(--color-purple);
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            font-size: 0.95rem;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 80px auto 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-family: 'Baloo 2', cursive;
+            font-size: 3rem;
+            color: white;
+            text-shadow: 4px 4px 0px rgba(0,0,0,0.2);
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .config-section {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            margin-bottom: 30px;
+        }
+
+        .config-section h2 {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.8rem;
+            color: var(--color-dark);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid var(--color-purple);
+            margin-bottom: 20px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .summary-row:last-child {
+            margin-bottom: 0;
+            border-top: 2px solid var(--color-purple);
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+
+        .summary-label {
+            color: #666;
+            font-weight: 600;
+        }
+
+        .summary-value {
+            font-family: 'Baloo 2', cursive;
+            font-size: 1.3rem;
+            color: var(--color-primary);
+            font-weight: 800;
+        }
+
+        /* Drag and Drop Styles */
+        .tasks-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            min-height: 300px;
+        }
+
+        .task-row-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border: 2px solid transparent;
+            background: white;
+            cursor: grab;
+            transition: all 0.2s ease;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .task-row-item:hover {
+            background: #fafafa;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            border-color: var(--color-purple);
+        }
+
+        .task-row-item.dragging {
+            opacity: 0.6;
+            background: #e8f1ff;
+            border-color: var(--color-purple);
+            cursor: grabbing;
+            transform: scale(1.02);
+        }
+
+        .task-row-item.drag-over {
+            border-top: 3px dashed var(--color-purple);
+            margin-top: 10px;
+            padding-top: 12px;
+        }
+
+        .drag-handle {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 24px;
+            height: 24px;
+            cursor: grab;
+            color: #bbb;
+            font-size: 1.2rem;
+            transition: color 0.2s ease;
+        }
+
+        .task-row-item:hover .drag-handle {
+            color: var(--color-purple);
+        }
+
+        .task-row-item.dragging .drag-handle {
+            cursor: grabbing;
+            color: var(--color-purple);
+        }
+
+        .task-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--color-purple);
+        }
+
+        .task-emoji {
+            font-size: 1.8rem;
+            width: 30px;
+            text-align: center;
+        }
+
+        .task-name {
+            flex: 1;
+            font-weight: 600;
+            color: var(--color-dark);
+        }
+
+        .task-price-input {
+            width: 100px;
+            padding: 8px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .task-price-input:focus {
+            outline: none;
+            border-color: var(--color-purple);
+        }
+
+        .price-currency {
+            color: #999;
+            font-weight: 600;
+            width: 20px;
+        }
+
+        .task-count {
+            background: var(--color-secondary);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Baloo 2', cursive;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--color-purple), #764ba2);
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid var(--color-purple);
+            margin-top: 20px;
+        }
+
+        .info-box h3 {
+            font-size: 1.1rem;
+            color: var(--color-dark);
+            margin-bottom: 8px;
+        }
+
+        .info-box p {
+            margin: 5px 0;
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        .orden-numero {
+            background: var(--color-purple);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .task-row-item {
+                flex-wrap: wrap;
+            }
+
+            .task-price-input {
+                width: 70px;
+            }
+
+            .top-nav {
+                flex-direction: column;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-nav">
+        <a id="dashboardLink" href="https://capinimx.bitrix24.site/ensenandoluke/dashboardmoneytareas/" class="nav-btn">
+            📊 Dashboard
+        </a>
+        <a href="https://capinimx.bitrix24.site/ensenandoluke/inicio/" class="nav-btn">
+            🏠 Inicio
+        </a>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>⚙️ Configuración</h1>
+            <p>Personaliza tus tareas, precios y orden</p>
+        </div>
+
+        <div class="alert alert-success" id="alertSuccess"></div>
+
+        <!-- Gestión de Tareas -->
+        <div class="config-section">
+            <h2>📝 Tareas Disponibles</h2>
+            <p style="color: #666; margin-bottom: 20px;">Activa/desactiva, ajusta precios y reordena tus tareas</p>
+
+            <!-- Resumen -->
+            <div class="summary-card">
+                <div class="summary-row">
+                    <span class="summary-label">Tareas Activas:</span>
+                    <span class="task-count" id="tareasCuenta">0</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Total Posible por Día:</span>
+                    <span class="summary-value" id="totalDiario">$0.00</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Total Posible por Semana:</span>
+                    <span class="summary-value" id="totalSemanal">$0.00</span>
+                </div>
+            </div>
+
+            <!-- Lista de tareas con drag and drop -->
+            <div class="tasks-list" id="tasksList">
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="guardarConfiguracion()">💾 Guardar Configuración</button>
+            </div>
+
+            <div class="info-box">
+                <h3>💡 Cómo usar</h3>
+                <p>✓ Marca las casillas para activar/desactivar tareas</p>
+                <p>✓ Ajusta el precio de cada tarea</p>
+                <p>✓ <strong>Arrastra las tareas para reordenarlas</strong> - el orden se guarda automáticamente</p>
+                <p>✓ Guarda los cambios cuando termines</p>
+                <p>✓ Los totales se actualizan automáticamente</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const clienteId = urlParams.get('cliente') || 'luke-alexander';
+        const MASTER_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyNdna02iNhTZR97mFJOBqpuQwPo6iO40ZpVr1vO5VnpUy8bdljtZiqpOvrpjB0tBNZ/exec";
+
+        // Actualizar link del dashboard con cliente
+        document.getElementById('dashboardLink').href = `https://capinimx.bitrix24.site/ensenandoluke/dashboardmoneytareas/?cliente=${clienteId}`;
+
+        // Base de tareas extensa
+        const tareasDisponibles = [
+            { id: 1, nombre: "Hacer tareas escolares", emoji: "📚", precioDefault: 10.00 },
+            { id: 2, nombre: "Lavarse los dientes (mañana)", emoji: "🦷", precioDefault: 1.50 },
+            { id: 3, nombre: "Tender la cama", emoji: "🛏️", precioDefault: 2.00 },
+            { id: 4, nombre: "Bañarse", emoji: "🧼", precioDefault: 2.00 },
+            { id: 5, nombre: "Recoger ropa y zapatos", emoji: "👕", precioDefault: 2.00 },
+            { id: 6, nombre: "Recoger/ordenar juguetes", emoji: "🧹", precioDefault: 1.00 },
+            { id: 7, nombre: "Lavarse los dientes (noche)", emoji: "🦷", precioDefault: 1.50 },
+            { id: 8, nombre: "Limpiar su escritorio", emoji: "📖", precioDefault: 1.50 },
+            { id: 9, nombre: "Hacer la tarea sin que te lo pidan", emoji: "⭐", precioDefault: 3.00 },
+            { id: 10, nombre: "Ayudar con la compra", emoji: "🛒", precioDefault: 2.50 },
+            { id: 11, nombre: "Lavar los platos", emoji: "🍽️", precioDefault: 3.00 },
+            { id: 12, nombre: "Barrer el piso", emoji: "🧹", precioDefault: 2.50 },
+            { id: 13, nombre: "Regar las plantas", emoji: "🌱", precioDefault: 1.50 },
+            { id: 14, nombre: "Sacar la basura", emoji: "🗑️", precioDefault: 2.00 },
+            { id: 15, nombre: "Hacer ejercicio/actividad física", emoji: "🏃", precioDefault: 2.00 },
+            { id: 16, nombre: "Leer un libro", emoji: "📚", precioDefault: 2.00 },
+            { id: 17, nombre: "Practicar un instrumento musical", emoji: "🎵", precioDefault: 3.00 },
+            { id: 18, nombre: "Ayudar a un hermano/hermana", emoji: "🤝", precioDefault: 2.00 },
+            { id: 19, nombre: "Organizar su habitación", emoji: "🏠", precioDefault: 3.00 },
+            { id: 20, nombre: "Preparar su mochila para el colegio", emoji: "🎒", precioDefault: 1.00 }
+        ];
+
+        let draggedElement = null;
+
+        // Cargar configuración al iniciar
+        window.onload = () => {
+            cargarConfiguracion();
+            actualizarTabla();
+        };
+
+        function cargarConfiguracion() {
+            const configGuardada = localStorage.getItem(`tasksConfig_${clienteId}`);
+            if (configGuardada) {
+                window.configActual = JSON.parse(configGuardada);
+            } else {
+                // Configuración por defecto (primeras 7 tareas)
+                window.configActual = {};
+                tareasDisponibles.slice(0, 7).forEach(tarea => {
+                    window.configActual[tarea.id] = {
+                        activa: true,
+                        precio: tarea.precioDefault,
+                        orden: tarea.id
+                    };
+                });
+            }
+        }
+
+        function actualizarTabla() {
+            const tasksList = document.getElementById('tasksList');
+            tasksList.innerHTML = '';
+
+            // Ordenar tareas por su orden guardado
+            const tareasOrdenadas = [...tareasDisponibles].sort((a, b) => {
+                const ordenA = window.configActual[a.id]?.orden || a.id;
+                const ordenB = window.configActual[b.id]?.orden || b.id;
+                return ordenA - ordenB;
+            });
+
+            tareasOrdenadas.forEach((tarea, index) => {
+                const config = window.configActual[tarea.id] || { activa: false, precio: tarea.precioDefault };
+
+                const div = document.createElement('div');
+                div.className = 'task-row-item';
+                div.draggable = true;
+                div.dataset.tareaId = tarea.id;
+                div.innerHTML = `
+                    <div class="drag-handle">⋮⋮</div>
+                    <div class="orden-numero">${index + 1}</div>
+                    <input type="checkbox" class="task-checkbox" 
+                        ${config.activa ? 'checked' : ''} 
+                        onchange="actualizarResumen()">
+                    <span class="task-emoji">${tarea.emoji}</span>
+                    <span class="task-name">${tarea.nombre}</span>
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <span class="price-currency">$</span>
+                        <input type="number" class="task-price-input" 
+                            value="${config.precio.toFixed(2)}" 
+                            min="0" step="0.50" 
+                            onchange="actualizarResumen()" 
+                            data-tarea-id="${tarea.id}" />
+                    </div>
+                `;
+
+                // Guardar referencias
+                const checkbox = div.querySelector('input[type="checkbox"]');
+                checkbox.dataset.tareaId = tarea.id;
+
+                // Eventos drag and drop
+                div.addEventListener('dragstart', handleDragStart);
+                div.addEventListener('dragend', handleDragEnd);
+                div.addEventListener('dragover', handleDragOver);
+                div.addEventListener('drop', handleDrop);
+                div.addEventListener('dragenter', handleDragEnter);
+                div.addEventListener('dragleave', handleDragLeave);
+
+                tasksList.appendChild(div);
+            });
+
+            actualizarResumen();
+        }
+
+        function handleDragStart(e) {
+            draggedElement = this;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+            document.querySelectorAll('.task-row-item').forEach(item => {
+                item.classList.remove('drag-over');
+            });
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            return false;
+        }
+
+        function handleDragEnter(e) {
+            if (this !== draggedElement && this.classList.contains('task-row-item')) {
+                this.classList.add('drag-over');
+            }
+        }
+
+        function handleDragLeave(e) {
+            this.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            
+            if (this !== draggedElement && this.classList.contains('task-row-item')) {
+                this.classList.remove('drag-over');
+                
+                // Intercambiar elementos
+                const tasksList = document.getElementById('tasksList');
+                const allItems = [...tasksList.querySelectorAll('.task-row-item')];
+                const draggedIndex = allItems.indexOf(draggedElement);
+                const targetIndex = allItems.indexOf(this);
+
+                if (draggedIndex < targetIndex) {
+                    this.parentNode.insertBefore(draggedElement, this.nextSibling);
+                } else {
+                    this.parentNode.insertBefore(draggedElement, this);
+                }
+
+                // Actualizar orden en config
+                actualizarOrdenConfig();
+                actualizarTabla();
+            }
+
+            return false;
+        }
+
+        function actualizarOrdenConfig() {
+            const items = document.querySelectorAll('.task-row-item');
+            items.forEach((item, index) => {
+                const tareaId = parseInt(item.dataset.tareaId);
+                if (window.configActual[tareaId]) {
+                    window.configActual[tareaId].orden = index + 1;
+                }
+            });
+        }
+
+        function actualizarResumen() {
+            const checkboxes = document.querySelectorAll('.task-checkbox');
+            const priceInputs = document.querySelectorAll('.task-price-input');
+            
+            let tareasCuenta = 0;
+            let totalDiario = 0;
+
+            checkboxes.forEach((checkbox) => {
+                const tareaId = parseInt(checkbox.dataset.tareaId);
+                const priceInput = document.querySelector(`input[type="number"][data-tarea-id="${tareaId}"]`);
+                
+                if (checkbox.checked) {
+                    tareasCuenta++;
+                    totalDiario += parseFloat(priceInput.value) || 0;
+                }
+            });
+
+            document.getElementById('tareasCuenta').textContent = tareasCuenta;
+            document.getElementById('totalDiario').textContent = '$' + totalDiario.toFixed(2);
+            document.getElementById('totalSemanal').textContent = '$' + (totalDiario * 7).toFixed(2);
+        }
+
+        async function guardarConfiguracion() {
+            const checkboxes = document.querySelectorAll('.task-checkbox');
+            const config = {};
+
+            checkboxes.forEach(checkbox => {
+                const tareaId = parseInt(checkbox.dataset.tareaId);
+                const priceInput = document.querySelector(`input[type="number"][data-tarea-id="${tareaId}"]`);
+                const orden = window.configActual[tareaId]?.orden || tareaId;
+                
+                config[tareaId] = {
+                    activa: checkbox.checked,
+                    precio: parseFloat(priceInput.value) || 0,
+                    orden: orden
+                };
+            });
+
+            // Guardar en localStorage
+            localStorage.setItem(`tasksConfig_${clienteId}`, JSON.stringify(config));
+            window.configActual = config;
+
+            // 🔄 Guardar también en Google Sheets
+            try {
+                const data = {
+                    clienteId: clienteId,
+                    tipo: 'CONFIGURACION_TAREAS',
+                    configuracion: JSON.stringify(config),
+                    fecha: new Date().toISOString()
+                };
+
+                await fetch(MASTER_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+
+                mostrarAlerta('✅ Configuración guardada en todos los dispositivos', 'success');
+            } catch (error) {
+                console.error('Error guardando en Sheets:', error);
+                mostrarAlerta('⚠️ Guardado localmente (reintenta más tarde para sincronizar)', 'success');
+            }
+        }
+
+        function mostrarAlerta(mensaje, tipo) {
+            const alert = document.getElementById('alertSuccess');
+            alert.textContent = mensaje;
+            alert.style.display = 'block';
+
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
